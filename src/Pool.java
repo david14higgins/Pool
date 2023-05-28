@@ -79,8 +79,10 @@ public class Pool {
         whiteBall = new Ball(810, 270, ballRadius, 15, Ball.BallColours.White);
         balls.add(whiteBall);
 
-        //Create Cue
+        //Create Cue and initialize 
         cue = new Cue(gameWidth, gameHeight);
+        cue.initializeCue(whiteBall.position);
+
 
         //Create Pockets
         int cornerRadius = 25;
@@ -125,13 +127,17 @@ public class Pool {
     }
 
     public void update() {
+        
+
         //Update mouse position
-        if(mouseFocused) {
-            cue.setMouseX(mouseX);
-            cue.setMouseY(mouseY);
-            cue.setWhiteBallX((int) whiteBall.position.x);
-            cue.setWhiteBallY((int) whiteBall.position.y);
-        }
+        // if(mouseFocused) {
+        //     cue.setMouseX(mouseX);
+        //     cue.setMouseY(mouseY);
+        //     cue.setWhiteBallX((int) whiteBall.position.x);
+        //     cue.setWhiteBallY((int) whiteBall.position.y);
+        // }
+
+
 
         //Reset on every update
         collidingPairs = new ArrayList<>();

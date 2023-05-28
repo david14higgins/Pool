@@ -143,13 +143,16 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         }
 
         //Draw Cue
-        /* 
         g2.setColor(Color.black);
-        if(poolGame.isMouseFocused() && poolGame.gameState == GameState.TAKING_SHOT) {
-            Cue poolCue = poolGame.cue;
-            g2.drawLine(playAreaX + poolCue.getWhiteBallX(), playAreaY + poolCue.getWhiteBallY(),playAreaX + poolCue.getMouseX(), playAreaY + poolCue.getMouseY());
+        if(poolGame.gameState == GameState.TAKING_SHOT) {
+            int startPosX = ((int) poolGame.cue.getCueStartPos().x) + playAreaX;
+            int startPosY = ((int) poolGame.cue.getCueStartPos().y) + playAreaY;
+            int endPosX = ((int) poolGame.cue.getCueEndPos().x) + playAreaX;
+            int endPosY = ((int) poolGame.cue.getCueEndPos().y) + playAreaY;
+            g2.drawLine(startPosX, startPosY, endPosX, endPosY);
+
         }
-        */
+    
 
 
         //---------Paint Program Compartments-----------

@@ -4,10 +4,11 @@ public class Cue {
     //Game information
     private final int gameWidth;
     private final int gameHeight;
-    private int mouseX;
-    private int mouseY;
-    private int whiteBallX;
-    private int whiteBallY;
+    private Vector2D mousePos; 
+    private Vector2D cueStartPos; 
+    private Vector2D cueEndPos; 
+    private Vector2D whiteBallPos;
+    private static final int length = 225; 
 
 
 
@@ -16,36 +17,17 @@ public class Cue {
         this.gameHeight = gameHeight;
     }
 
-
-    public int getMouseX() {
-        return mouseX;
+    public void initializeCue(Vector2D whiteBallPos) {
+        this.whiteBallPos = whiteBallPos; 
+        cueStartPos = new Vector2D(whiteBallPos.x + 20, whiteBallPos.y);
+        cueEndPos = new Vector2D(cueStartPos.x + length, cueStartPos.y); 
     }
 
-    public void setMouseX(int mouseX) {
-        this.mouseX = mouseX;
+    public Vector2D getCueStartPos() {
+        return cueStartPos; 
     }
 
-    public int getMouseY() {
-        return mouseY;
-    }
-
-    public void setMouseY(int mouseY) {
-        this.mouseY = mouseY;
-    }
-
-    public int getWhiteBallX() {
-        return whiteBallX;
-    }
-
-    public void setWhiteBallX(int whiteBallX) {
-        this.whiteBallX = whiteBallX;
-    }
-
-    public int getWhiteBallY() {
-        return whiteBallY;
-    }
-
-    public void setWhiteBallY(int whiteBallY) {
-        this.whiteBallY = whiteBallY;
+    public Vector2D getCueEndPos() {
+        return cueEndPos; 
     }
 }
