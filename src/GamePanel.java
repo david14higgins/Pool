@@ -145,12 +145,15 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         //Draw Cue
         g2.setColor(Color.black);
         if(poolGame.gameState == GameState.TAKING_SHOT) {
-            int startPosX = ((int) poolGame.cue.getCueStartPos().x) + playAreaX;
-            int startPosY = ((int) poolGame.cue.getCueStartPos().y) + playAreaY;
-            int endPosX = ((int) poolGame.cue.getCueEndPos().x) + playAreaX;
-            int endPosY = ((int) poolGame.cue.getCueEndPos().y) + playAreaY;
-            g2.drawLine(startPosX, startPosY, endPosX, endPosY);
-
+            Vector2D[] cueCorners = {poolGame.cue.getCueStartNormalOne(), poolGame.cue.getCueStartNormalTwo(), 
+            poolGame.cue.getCueEndNormalTwo(), poolGame.cue.getCueEndNormalOne()};
+            int[] xPoints = new int[4];  
+            int[] yPoints = new int[4];  
+            for(int i = 0; i < 4; i++) {
+                xPoints[i] = playAreaX + ((int) cueCorners[i].x);
+                yPoints[i] = playAreaY + ((int) cueCorners[i].y);
+            }
+            g2.drawPolygon(xPoints, yPoints, 4);
         }
     
 
