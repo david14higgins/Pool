@@ -2,27 +2,29 @@ import java.awt.Polygon;
 
 public abstract class Cue {
     //Game information
-    protected Vector2D cueStart; 
-    protected Vector2D cueStartNormalOne; 
-    protected Vector2D cueStartNormalTwo; 
-    protected Vector2D cueEnd; 
-    protected Vector2D cueEndNormalOne; 
-    protected Vector2D cueEndNormalTwo; 
+
+    //Cue start and end coordinates
+    protected Vector2D cueStart, cueEnd; 
+    //Cue vertices coordinates
+    protected Vector2D cueStartNormalOne, cueStartNormalTwo, cueEndNormalOne, cueEndNormalTwo; 
+    //Cue hitbox vertices coordinates
     protected Vector2D cueHitBoxVertexOne, cueHitBoxVertexTwo, cueHitBoxVertexThree, cueHitBoxVertexFour; 
-    protected static final int length = 300; 
-    protected static final int cueTipWidth = 4; 
-    protected static final int cueEndWidth = 6;
-    protected static final int hitBoxWidth = 20; 
-    protected double directionX; 
-    protected double directionY; 
+    //Cue settings 
+    protected final int length; 
+    protected final int cueTipWidth; 
+    protected final int cueEndWidth;
+    protected final int hitBoxWidth = 20; 
+    //If cue has been clicked (default - not)
     public boolean selected = false;
 
 
-    public Cue() {
-        
+    public Cue(int length, int cueTipWidth, int cueEndWidth) {
+        this.length = length;
+        this.cueTipWidth = cueTipWidth; 
+        this.cueEndWidth = cueEndWidth; 
     }
 
-    //Repositions cue based on its current direction
+    //Repositions cue based on its current direction - implemented differently by aiming cue and power cue
     public abstract void repositionCue();
 
     //Taken from the edge functionality 

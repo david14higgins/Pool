@@ -1,11 +1,17 @@
 public class AimingCue extends Cue{
+    //For position w.r.t. to the mouse
     public Vector2D mousePos; 
-    private static final int restingDistFromWhiteBall = 20;
+    //For positioning w.r.t to the white ball 
     public Vector2D whiteBallPos;
+    //Unit vector of aiming cue stick's current direction
+    private double directionX; 
+    private double directionY; 
+    //How far cue is drawn from the white ball (needs updating when power cue implemented)
+    private final int restingDistFromWhiteBall = 20;
 
-
-    public AimingCue() {
-        super();
+    
+    public AimingCue(int length, int cueTipWidth, int cueEndWidth) {
+        super(length, cueTipWidth, cueEndWidth);
     }
 
     //Cue always sits horizontally to the right of white ball before it has been moved by player
