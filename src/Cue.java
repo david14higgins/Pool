@@ -13,7 +13,7 @@ public abstract class Cue {
     protected final int length; 
     protected final int cueTipWidth; 
     protected final int cueEndWidth;
-    protected final int hitBoxWidth = 20; 
+    protected final int hitBoxWidth = 40; 
     //If cue has been clicked (default - not)
     public boolean selected = false;
 

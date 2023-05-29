@@ -37,6 +37,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         this.setFocusable(true);
         createCompartments();
         poolGame = new Pool(playArea.width, playArea.height);
+        powerCue = new PowerCue(450, 4, 8, powerArea.width, powerArea.height);
+        powerCue.initializeCue();
     }
 
     public void startGameThread() {
@@ -142,7 +144,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             g2.fillArc(playArea.x + paintPointX, playArea.y + paintPointY, diameter, diameter, 0, 360);
         }
 
-        //Draw Cue
+        //Draw Aiming Cue
         g2.setColor(Color.black);
         if(poolGame.gameState == GameState.TAKING_SHOT) {
             Polygon cueVertices = poolGame.aimingCue.getCueVertices();
@@ -152,10 +154,26 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 cueVertices.ypoints[i] += playArea.y;
             }
             g2.drawPolygon(cueVertices);
-
         }
-        
+
+        //Drawing Power Cue 
+        Polygon cueVertices = powerCue.getCueVertices();
+        for (int i = 0; i < cueVertices.npoints; i++) {
+            //Update coordinates 
+            cueVertices.xpoints[i] += powerArea.x;
+            cueVertices.ypoints[i] += powerArea.y;
+        }
+        g2.drawPolygon(cueVertices);
     
+        //Drawing Power Cue 
+        Polygon cueHitboxVertices = poolGame.aimingCue.getCueHitboxVertices();
+        for (int i = 0; i < cueHitboxVertices.npoints; i++) {
+            //Update coordinates 
+            cueHitboxVertices.xpoints[i] += playArea.x;
+            cueHitboxVertices.ypoints[i] += playArea.y;
+        }
+        g2.setColor(Color.red);
+        g2.drawPolygon(cueHitboxVertices);
 
 
         //---------Paint Program Compartments-----------
@@ -319,7 +337,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         playArea = new Compartment(65, 10, 1080, 540);
         compartments.add(playArea);
 
-        Compartment powerArea = new Compartment(10, 10, 40, 540);
+        powerArea = new Compartment(10, 10, 40, 540);
         compartments.add(powerArea);
 
         Compartment redPocketedArea = new Compartment(10, 565, 275, 40);

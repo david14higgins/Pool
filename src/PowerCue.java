@@ -13,14 +13,10 @@ public class PowerCue extends Cue {
     }
 
     public void initializeCue() {
-        //Line up centers 
-        cueStart.x = compartmentWidth / 2;
-        cueEnd.x = compartmentWidth / 2;
-
-        //Centre cue in power area 
-        cueStart.y = (compartmentHeight - length) / 2;
-        cueEnd.y = compartmentHeight - (compartmentHeight - length) / 2;
-
+        //Centre cue in its compartment
+        cueStart = new Vector2D(compartmentWidth / 2, (compartmentHeight - length) / 2) ;
+        cueEnd = new Vector2D(compartmentWidth / 2, compartmentHeight - (compartmentHeight - length) / 2);
+        
         updateVerticesAndHitbox();
     }
 
