@@ -4,7 +4,7 @@ public class Cue {
     //Game information
     private final int gameWidth;
     private final int gameHeight;
-    private Vector2D mousePos; 
+    public Vector2D mousePos; 
     private Vector2D cueStart; 
     private Vector2D cueStartNormalOne; 
     private Vector2D cueStartNormalTwo; 
@@ -14,6 +14,7 @@ public class Cue {
     private Vector2D whiteBallPos;
     private Vector2D cueHitBoxVertexOne, cueHitBoxVertexTwo, cueHitBoxVertexThree, cueHitBoxVertexFour; 
     private static final int length = 300; 
+    private static final int restingDistFromWhiteBall = 20;
     private static final int cueTipWidth = 4; 
     private static final int cueEndWidth = 6;
     private static final int hitBoxWidth = 20; 
@@ -28,13 +29,32 @@ public class Cue {
     //Cue always sits horizontally to the right of white ball before it has been moved by player
     public void initializeCue(Vector2D whiteBallPos) {
         this.whiteBallPos = whiteBallPos; 
-        cueStart = new Vector2D(whiteBallPos.x + 20, whiteBallPos.y);
+        cueStart = new Vector2D(whiteBallPos.x + restingDistFromWhiteBall, whiteBallPos.y);
         cueEnd = new Vector2D(cueStart.x + length, cueStart.y); 
-        updateNormals();
+        updateVerticesAndHitbox();
+    }
+
+    //Updates position of cue based on mouse position and white ball 
+    public void updatePosition() {
+        //Get unit vector of mouse position to white ball position 
+        double x = mousePos.x - whiteBallPos.x; 
+        double y = mousePos.y - whiteBallPos.y; 
+        double d = Math.sqrt(x * x + y * y);
+        x = x / d; 
+        y = y / d; 
+
+        //Reposition cue start and end based on this unit vector 
+        cueStart.x = whiteBallPos.x + (x * restingDistFromWhiteBall);
+        cueStart.y = whiteBallPos.y + (y * restingDistFromWhiteBall); 
+        cueEnd.x = whiteBallPos.x + (x * (restingDistFromWhiteBall + length)); 
+        cueEnd.y = whiteBallPos.y + (y * (restingDistFromWhiteBall + length)); 
+        
+        //Update vertices and hitbox
+        updateVerticesAndHitbox();
     }
 
     //Taken from the edge functionality 
-    private void updateNormals() {
+    private void updateVerticesAndHitbox() {
         //Get normal unit vectors
         double nx = -1 * (cueEnd.y - cueStart.y);
         double ny = (cueEnd.x - cueStart.x);
@@ -58,13 +78,7 @@ public class Cue {
 
     //Updates selected
     public void checkClicked(int mouseX, int mouseY) {
-        if (this.getCueHitboxVertices().contains(mouseX, mouseY)) {
-            selected = true; 
-            System.out.println("Cue selected");
-        } else {
-            selected = false; 
-            System.out.println("Cue deselected");
-        }
+        selected = this.getCueHitboxVertices().contains(mouseX, mouseY) ?  true : false;
     }
 
 

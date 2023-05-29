@@ -234,6 +234,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             int xGameClick = e.getX() - playArea.getCompartmentX();
             int yGameClick = e.getY() - playArea.getCompartmentY();
 
+            //For ball movement - will need restricting 
             for (Ball b : poolGame.balls) {
                 if(b.selected) {
                     b.position.x = xGameClick;
@@ -244,6 +245,13 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 }
             }
 
+            //Cue movement 
+            if(poolGame.cue.selected) {
+                poolGame.cue.mousePos = new Vector2D((xGameClick), yGameClick);
+                poolGame.cue.updatePosition();
+            }
+
+            /* --------- For moving edges (disabled) ---------- 
             for (Edge ed : poolGame.edges) {
                 if(ed.startSelected) {
                     Vector2D newStart = new Vector2D(xGameClick, yGameClick);
@@ -253,6 +261,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                     ed.setEnd(newEnd);
                 }
             }
+            */
         }
 
     }
@@ -264,18 +273,23 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
             //LEFT CLICK - Static Collisions
             if(e.getButton() == MouseEvent.BUTTON1) {
-                //Deselect Ball
+                //Deselect Ball (needs updating for white ball only)
                 for (Ball b : poolGame.balls) {
                     if (b.selected) {
                         b.selected = false;
                     }
                 }
 
-                //Deselect Edges
+                /* Deselect Edges (no longer required)
                 for (Edge ed : poolGame.edges) {
                     ed.startSelected = false;
                     ed.endSelected = false;
                 }
+                */
+
+                //Deselect Cue 
+                poolGame.cue.selected = false;
+
             //RIGHT CLICK - Dynamic Collisions
             } else if (e.getButton() == MouseEvent.BUTTON3) {
                 //Adjust click coordinates to reflect play area's (0,0) coordinate system
