@@ -240,7 +240,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                     b.position.x = xGameClick;
                     b.position.y = yGameClick;
                     if (b.equals(poolGame.whiteBall)) {
-                        poolGame.cue.initializeCue(b.position);
+                        poolGame.cue.whiteBallPos = b.position;
+                        poolGame.cue.repositionCue();
                     } 
                 }
             }
@@ -248,7 +249,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             //Cue movement 
             if(poolGame.cue.selected) {
                 poolGame.cue.mousePos = new Vector2D((xGameClick), yGameClick);
-                poolGame.cue.updatePosition();
+                poolGame.cue.aimCue();
             }
 
             /* --------- For moving edges (disabled) ---------- 

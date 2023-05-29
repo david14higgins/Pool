@@ -11,13 +11,15 @@ public class Cue {
     private Vector2D cueEnd; 
     private Vector2D cueEndNormalOne; 
     private Vector2D cueEndNormalTwo; 
-    private Vector2D whiteBallPos;
+    public Vector2D whiteBallPos;
     private Vector2D cueHitBoxVertexOne, cueHitBoxVertexTwo, cueHitBoxVertexThree, cueHitBoxVertexFour; 
     private static final int length = 300; 
     private static final int restingDistFromWhiteBall = 20;
     private static final int cueTipWidth = 4; 
     private static final int cueEndWidth = 6;
     private static final int hitBoxWidth = 20; 
+    private double directionX; 
+    private double directionY; 
     public boolean selected = false;
 
 
@@ -32,22 +34,34 @@ public class Cue {
         cueStart = new Vector2D(whiteBallPos.x + restingDistFromWhiteBall, whiteBallPos.y);
         cueEnd = new Vector2D(cueStart.x + length, cueStart.y); 
         updateVerticesAndHitbox();
+
+        //Inital direction unit vector is (-1, 0)
+        directionX = 1; 
+        directionY = 0;
     }
 
     //Updates position of cue based on mouse position and white ball 
-    public void updatePosition() {
-        //Get unit vector of mouse position to white ball position 
-        double x = mousePos.x - whiteBallPos.x; 
-        double y = mousePos.y - whiteBallPos.y; 
-        double d = Math.sqrt(x * x + y * y);
-        x = x / d; 
-        y = y / d; 
+    public void aimCue() {
+        //updates direction unit vector
 
+        //Get unit vector of mouse position to white ball position 
+        directionX = mousePos.x - whiteBallPos.x; 
+        directionY = mousePos.y - whiteBallPos.y; 
+        double d = Math.sqrt(directionX * directionX + directionY * directionY);
+        directionX = directionX / d; 
+        directionY = directionY / d; 
+
+        repositionCue();
+    }
+
+
+    //Repositions cue based on its current direction
+    public void repositionCue() {
         //Reposition cue start and end based on this unit vector 
-        cueStart.x = whiteBallPos.x + (x * restingDistFromWhiteBall);
-        cueStart.y = whiteBallPos.y + (y * restingDistFromWhiteBall); 
-        cueEnd.x = whiteBallPos.x + (x * (restingDistFromWhiteBall + length)); 
-        cueEnd.y = whiteBallPos.y + (y * (restingDistFromWhiteBall + length)); 
+        cueStart.x = whiteBallPos.x + (directionX * restingDistFromWhiteBall);
+        cueStart.y = whiteBallPos.y + (directionY * restingDistFromWhiteBall); 
+        cueEnd.x = whiteBallPos.x + (directionX * (restingDistFromWhiteBall + length)); 
+        cueEnd.y = whiteBallPos.y + (directionY * (restingDistFromWhiteBall + length)); 
         
         //Update vertices and hitbox
         updateVerticesAndHitbox();
