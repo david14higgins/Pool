@@ -153,15 +153,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             }
             g2.drawPolygon(cueVertices);
 
-            //Draw Hitbox (temporarily)
-            g2.setColor(Color.red);
-            Polygon cueHitboxVertices = poolGame.cue.getCueHitboxVertices();
-            for (int i = 0; i < cueVertices.npoints; i++) {
-                //Update coordinates 
-                cueHitboxVertices.xpoints[i] += playAreaX;
-                cueHitboxVertices.ypoints[i] += playAreaY;
-            }
-            g2.drawPolygon(cueHitboxVertices);
         }
         
     
