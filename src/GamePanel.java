@@ -14,9 +14,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
     private ArrayList<Compartment> compartments;
     private Compartment playArea;
-
-    public int playAreaX = 65;
-    public int playAreaY = 10;
+    private Compartment powerArea; 
 
     public static final int FPS = 60;
     public static final double ElapsedTime = 0.017; //60FPS = 16.7 milliseconds between each frame
@@ -28,6 +26,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
     Pool poolGame;
 
+    PowerCue powerCue;
+
     public GamePanel() {
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.setBackground(Color.gray);
@@ -36,7 +36,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         this.addMouseMotionListener(this);
         this.setFocusable(true);
         createCompartments();
-        poolGame = new Pool(playArea.getCompartmentWidth(), playArea.getCompartmentHeight());
+        poolGame = new Pool(playArea.width, playArea.height);
     }
 
     public void startGameThread() {
@@ -110,7 +110,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                     break;
             }
 
-            g2.fillArc(playAreaX + paintXPos,playAreaY + paintYPos, diameter, diameter, 0, 360);
+            g2.fillArc(playArea.x + paintXPos,playArea.y + paintYPos, diameter, diameter, 0, 360);
         }
 
         //---------Paint Edges-----------
@@ -122,12 +122,12 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             int paintPosEndY = (int) edge.getEnd().y - edge.radius;
             int diameter = edge.radius * 2;
 
-            g2.drawArc(playAreaX + paintPosStartX, playAreaY + paintPosStartY, diameter, diameter, 0, 360 );
-            g2.drawArc(playAreaX + paintPosEndX, playAreaY + paintPosEndY, diameter, diameter, 0, 360 );
+            g2.drawArc(playArea.x + paintPosStartX, playArea.y + paintPosStartY, diameter, diameter, 0, 360 );
+            g2.drawArc(playArea.x + paintPosEndX, playArea.y + paintPosEndY, diameter, diameter, 0, 360 );
 
-            //g2.drawLine(playAreaX + (int) edge.getStart().x, playAreaY + (int) edge.getStart().y, playAreaX + (int) edge.getEnd().x, playAreaY + (int) edge.getEnd().y);
-            g2.drawLine(playAreaX + (int) edge.getStartNormalOne().x, playAreaY + (int) edge.getStartNormalOne().y, playAreaX + (int) edge.getEndNormalOne().x, playAreaY + (int) edge.getEndNormalOne().y);
-            g2.drawLine(playAreaX + (int) edge.getStartNormalTwo().x, playAreaY + (int) edge.getStartNormalTwo().y, playAreaX + (int) edge.getEndNormalTwo().x, playAreaY + (int) edge.getEndNormalTwo().y);
+            //g2.drawLine(playArea.x + (int) edge.getStart().x, playArea.y + (int) edge.getStart().y, playArea.x + (int) edge.getEnd().x, playArea.y + (int) edge.getEnd().y);
+            g2.drawLine(playArea.x + (int) edge.getStartNormalOne().x, playArea.y + (int) edge.getStartNormalOne().y, playArea.x + (int) edge.getEndNormalOne().x, playArea.y + (int) edge.getEndNormalOne().y);
+            g2.drawLine(playArea.x + (int) edge.getStartNormalTwo().x, playArea.y + (int) edge.getStartNormalTwo().y, playArea.x + (int) edge.getEndNormalTwo().x, playArea.y + (int) edge.getEndNormalTwo().y);
 
 
         }
@@ -139,7 +139,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             int paintPointX = (int) pocket.getPositionVec().x - pocket.radius;
             int paintPointY = (int) pocket.getPositionVec().y - pocket.radius;
             int diameter = pocket.radius * 2;
-            g2.fillArc(playAreaX + paintPointX, playAreaY + paintPointY, diameter, diameter, 0, 360);
+            g2.fillArc(playArea.x + paintPointX, playArea.y + paintPointY, diameter, diameter, 0, 360);
         }
 
         //Draw Cue
@@ -148,8 +148,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             Polygon cueVertices = poolGame.aimingCue.getCueVertices();
             for (int i = 0; i < cueVertices.npoints; i++) {
                 //Update coordinates 
-                cueVertices.xpoints[i] += playAreaX;
-                cueVertices.ypoints[i] += playAreaY;
+                cueVertices.xpoints[i] += playArea.x;
+                cueVertices.ypoints[i] += playArea.y;
             }
             g2.drawPolygon(cueVertices);
 
@@ -163,10 +163,10 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         //Play area border
         g2.setColor(Color.white);
         for (Compartment c : compartments) {
-            g2.fillRect(c.getCompartmentX() - 5, c.getCompartmentY() - 5, c.getCompartmentWidth() + 10, 5);
-            g2.fillRect(c.getCompartmentX() - 5, c.getCompartmentY(), 5, c.getCompartmentHeight());
-            g2.fillRect(c.getCompartmentX() + c.getCompartmentWidth(), c.getCompartmentY(), 5, c.getCompartmentHeight());
-            g2.fillRect(c.getCompartmentX() - 5, c.getCompartmentY() + c.getCompartmentHeight(), c.getCompartmentWidth() + 10, 5);
+            g2.fillRect(c.x - 5, c.y - 5, c.width + 10, 5);
+            g2.fillRect(c.x - 5, c.y, 5, c.height);
+            g2.fillRect(c.x + c.width, c.y, 5, c.height);
+            g2.fillRect(c.x - 5, c.y + c.height, c.width + 10, 5);
         }
 
 
@@ -188,8 +188,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
     public void mousePressed(MouseEvent e) {
         if (playArea.containsMouse(e.getX(), e.getY())){
             //Shift coordinates to fit pool game's (0,0) coordinate system
-            int xGameClick = e.getX() - playArea.getCompartmentX();
-            int yGameClick = e.getY() - playArea.getCompartmentY();
+            int xGameClick = e.getX() - playArea.x;
+            int yGameClick = e.getY() - playArea.y;
 
             //LEFT CLICK - Static Collisions or (TEMPORARILY!) moving edges
             if(e.getButton() == MouseEvent.BUTTON1) {
@@ -222,8 +222,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
     public void mouseDragged(MouseEvent e) {
         if (playArea.containsMouse(e.getX(), e.getY())) {
             //Shift coordinates to fit pool game's (0,0) coordinate system
-            int xGameClick = e.getX() - playArea.getCompartmentX();
-            int yGameClick = e.getY() - playArea.getCompartmentY();
+            int xGameClick = e.getX() - playArea.x;
+            int yGameClick = e.getY() - playArea.y;
 
             //For ball movement - will need restricting 
             for (Ball b : poolGame.balls) {
@@ -260,8 +260,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
     @Override
     public void mouseReleased(MouseEvent e) {
-            int xGameClick = e.getX() - playArea.getCompartmentX();
-            int yGameClick = e.getY() - playArea.getCompartmentY();
+            int xGameClick = e.getX() - playArea.x;
+            int yGameClick = e.getY() - playArea.y;
 
             //LEFT CLICK - Static Collisions
             if(e.getButton() == MouseEvent.BUTTON1) {
@@ -304,8 +304,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
     @Override
     public void mouseMoved(MouseEvent e) {
         if (playArea.containsMouse(e.getX(), e.getY())) {
-            int xGameClick = e.getX() - playArea.getCompartmentX();
-            int yGameClick = e.getY() - playArea.getCompartmentY();
+            int xGameClick = e.getX() - playArea.x;
+            int yGameClick = e.getY() - playArea.y;
             poolGame.setMouseX(xGameClick);
             poolGame.setMouseY(yGameClick);
             poolGame.setMouseFocused(true);
