@@ -81,7 +81,8 @@ public class Pool {
 
         //Create Cue and initialize 
         aimingCue = new AimingCue(300, 4, 6);
-        aimingCue.initializeCue(whiteBall.position);
+        aimingCue.whiteBallPos = whiteBall.position;
+        aimingCue.initializeCue();
 
 
         //Create Pockets

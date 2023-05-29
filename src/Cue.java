@@ -27,6 +27,9 @@ public abstract class Cue {
     //Repositions cue based on its current direction - implemented differently by aiming cue and power cue
     public abstract void repositionCue();
 
+    //Initalizes the cue's position
+    public abstract void initializeCue();
+
     //Taken from the edge functionality 
     protected void updateVerticesAndHitbox() {
         //Get normal unit vectors

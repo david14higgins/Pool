@@ -9,14 +9,13 @@ public class AimingCue extends Cue{
     //How far cue is drawn from the white ball (needs updating when power cue implemented)
     private final int restingDistFromWhiteBall = 20;
 
-    
+
     public AimingCue(int length, int cueTipWidth, int cueEndWidth) {
         super(length, cueTipWidth, cueEndWidth);
     }
 
     //Cue always sits horizontally to the right of white ball before it has been moved by player
-    public void initializeCue(Vector2D whiteBallPos) {
-        this.whiteBallPos = whiteBallPos; 
+    public void initializeCue() {
         cueStart = new Vector2D(whiteBallPos.x + restingDistFromWhiteBall, whiteBallPos.y);
         cueEnd = new Vector2D(cueStart.x + length, cueStart.y); 
         updateVerticesAndHitbox();
