@@ -145,16 +145,27 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         //Draw Cue
         g2.setColor(Color.black);
         if(poolGame.gameState == GameState.TAKING_SHOT) {
-            Vector2D[] cueCorners = {poolGame.cue.getCueStartNormalOne(), poolGame.cue.getCueStartNormalTwo(), 
-            poolGame.cue.getCueEndNormalTwo(), poolGame.cue.getCueEndNormalOne()};
+            Vector2D[] cueVertices = poolGame.cue.getCueVertices();
             int[] xPoints = new int[4];  
             int[] yPoints = new int[4];  
             for(int i = 0; i < 4; i++) {
-                xPoints[i] = playAreaX + ((int) cueCorners[i].x);
-                yPoints[i] = playAreaY + ((int) cueCorners[i].y);
+                xPoints[i] = playAreaX + ((int) cueVertices[i].x);
+                yPoints[i] = playAreaY + ((int) cueVertices[i].y);
             }
             g2.drawPolygon(xPoints, yPoints, 4);
+
+            //Draw Hitbox (temporarily)
+            g2.setColor(Color.red);
+            Vector2D[] cueHitboxVertices = poolGame.cue.getCueHitboxVertices();
+            int[] hitboxXPoints = new int[4];
+            int[] hitboxYPoints = new int[4];
+            for(int j = 0; j < 4; j++) {
+                hitboxXPoints[j] = playAreaX + ((int) cueHitboxVertices[j].x);
+                hitboxYPoints[j] = playAreaY + ((int) cueHitboxVertices[j].y);
+            }
+            g2.drawPolygon(hitboxXPoints, hitboxYPoints, 4);
         }
+        
     
 
 
