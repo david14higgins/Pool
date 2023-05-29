@@ -202,16 +202,20 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
             //LEFT CLICK - Static Collisions or (TEMPORARILY!) moving edges
             if(e.getButton() == MouseEvent.BUTTON1) {
-                //Select ball for drag event - adjust for
+                //Select ball for drag event - will need restricting 
                 for(Ball b : poolGame.balls) {
                     if (poolGame.ballClicked(b, xGameClick, yGameClick)) {
                         b.selected = true;
                     }
                 }
 
-                for (Edge ed : poolGame.edges) {
-                    ed.checkClicked(xGameClick, yGameClick);
-                }
+                //Check if cue is selected
+                poolGame.cue.checkClicked(xGameClick, yGameClick);
+
+                // --------- For moving edges (disabled) ---------- 
+                //for (Edge ed : poolGame.edges) {
+                //    ed.checkClicked(xGameClick, yGameClick);
+                //}
             //RIGHT CLICK - Dynamic Collisions
             } else if (e.getButton() == MouseEvent.BUTTON3) {
                 //Adjust click coordinates to reflect play area's (0,0) coordinate system
@@ -234,6 +238,9 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 if(b.selected) {
                     b.position.x = xGameClick;
                     b.position.y = yGameClick;
+                    if (b.equals(poolGame.whiteBall)) {
+                        poolGame.cue.initializeCue(b.position);
+                    } 
                 }
             }
 

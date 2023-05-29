@@ -13,7 +13,7 @@ public class Cue {
     private Vector2D cueEndNormalTwo; 
     private Vector2D whiteBallPos;
     private Vector2D cueHitBoxVertexOne, cueHitBoxVertexTwo, cueHitBoxVertexThree, cueHitBoxVertexFour; 
-    private static final int length = 250; 
+    private static final int length = 300; 
     private static final int cueTipWidth = 4; 
     private static final int cueEndWidth = 6;
     private static final int hitBoxWidth = 20; 
@@ -54,6 +54,17 @@ public class Cue {
         cueHitBoxVertexTwo = new Vector2D(cueStart.x - nx * (hitBoxWidth / 2), cueStart.y - ny * (hitBoxWidth / 2));
         cueHitBoxVertexThree = new Vector2D(cueEnd.x + nx * (hitBoxWidth / 2), cueEnd.y + ny * (hitBoxWidth / 2));
         cueHitBoxVertexFour = new Vector2D(cueEnd.x - nx * (hitBoxWidth / 2), cueEnd.y - ny * (hitBoxWidth / 2));
+    }
+
+    //Updates selected
+    public void checkClicked(int mouseX, int mouseY) {
+        if (this.getCueHitboxVertices().contains(mouseX, mouseY)) {
+            selected = true; 
+            System.out.println("Cue selected");
+        } else {
+            selected = false; 
+            System.out.println("Cue deselected");
+        }
     }
 
 
