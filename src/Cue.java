@@ -1,3 +1,5 @@
+import java.awt.Polygon;
+
 public class Cue {
     //Game information
     private final int gameWidth;
@@ -15,6 +17,7 @@ public class Cue {
     private static final int cueTipWidth = 4; 
     private static final int cueEndWidth = 6;
     private static final int hitBoxWidth = 20; 
+    public boolean selected = false;
 
 
     public Cue(int gameWidth, int gameHeight) {
@@ -54,13 +57,27 @@ public class Cue {
     }
 
 
-    //Return an array of the vertices going clockwise from the top right corner 
-    public Vector2D[] getCueVertices() {
-        return new Vector2D[] {cueStartNormalOne, cueEndNormalOne, cueEndNormalTwo, cueStartNormalTwo};
+    //Return a polygon of the vertices going clockwise from the top right corner 
+    public Polygon getCueVertices() {
+        Vector2D[] cueVertices = new Vector2D[] {cueStartNormalOne, cueEndNormalOne, cueEndNormalTwo, cueStartNormalTwo};
+        int[] xPoints = new int[4];  
+        int[] yPoints = new int[4];  
+        for (int i = 0; i < 4; i++) {
+            xPoints[i] = (int) cueVertices[i].x;
+            yPoints[i] = (int) cueVertices[i].y;
+        }
+        return new Polygon(xPoints, yPoints, 4);
     }
 
     //Return an array of the vertices going clockwise from the top right hitbox corner 
-    public Vector2D[] getCueHitboxVertices() {
-        return new Vector2D[] {cueHitBoxVertexOne, cueHitBoxVertexThree, cueHitBoxVertexFour, cueHitBoxVertexTwo};
+    public Polygon getCueHitboxVertices() {
+        Vector2D[] cueHitboxVertices = new Vector2D[] {cueHitBoxVertexOne, cueHitBoxVertexThree, cueHitBoxVertexFour, cueHitBoxVertexTwo};
+        int[] xPoints = new int[4];  
+        int[] yPoints = new int[4];  
+        for (int i = 0; i < 4; i++) {
+            xPoints[i] = (int) cueHitboxVertices[i].x;
+            yPoints[i] = (int) cueHitboxVertices[i].y;
+        }
+        return new Polygon(xPoints, yPoints, 4);
     }
 }
