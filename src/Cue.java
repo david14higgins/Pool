@@ -1,74 +1,32 @@
 import java.awt.Polygon;
 
-public class Cue {
+public abstract class Cue {
     //Game information
-    private final int gameWidth;
-    private final int gameHeight;
-    public Vector2D mousePos; 
-    private Vector2D cueStart; 
-    private Vector2D cueStartNormalOne; 
-    private Vector2D cueStartNormalTwo; 
-    private Vector2D cueEnd; 
-    private Vector2D cueEndNormalOne; 
-    private Vector2D cueEndNormalTwo; 
-    public Vector2D whiteBallPos;
-    private Vector2D cueHitBoxVertexOne, cueHitBoxVertexTwo, cueHitBoxVertexThree, cueHitBoxVertexFour; 
-    private static final int length = 300; 
-    private static final int restingDistFromWhiteBall = 20;
-    private static final int cueTipWidth = 4; 
-    private static final int cueEndWidth = 6;
-    private static final int hitBoxWidth = 20; 
-    private double directionX; 
-    private double directionY; 
+    protected Vector2D cueStart; 
+    protected Vector2D cueStartNormalOne; 
+    protected Vector2D cueStartNormalTwo; 
+    protected Vector2D cueEnd; 
+    protected Vector2D cueEndNormalOne; 
+    protected Vector2D cueEndNormalTwo; 
+    protected Vector2D cueHitBoxVertexOne, cueHitBoxVertexTwo, cueHitBoxVertexThree, cueHitBoxVertexFour; 
+    protected static final int length = 300; 
+    protected static final int cueTipWidth = 4; 
+    protected static final int cueEndWidth = 6;
+    protected static final int hitBoxWidth = 20; 
+    protected double directionX; 
+    protected double directionY; 
     public boolean selected = false;
 
 
-    public Cue(int gameWidth, int gameHeight) {
-        this.gameWidth = gameWidth;
-        this.gameHeight = gameHeight;
+    public Cue() {
+        
     }
-
-    //Cue always sits horizontally to the right of white ball before it has been moved by player
-    public void initializeCue(Vector2D whiteBallPos) {
-        this.whiteBallPos = whiteBallPos; 
-        cueStart = new Vector2D(whiteBallPos.x + restingDistFromWhiteBall, whiteBallPos.y);
-        cueEnd = new Vector2D(cueStart.x + length, cueStart.y); 
-        updateVerticesAndHitbox();
-
-        //Inital direction unit vector is (-1, 0)
-        directionX = 1; 
-        directionY = 0;
-    }
-
-    //Updates position of cue based on mouse position and white ball 
-    public void aimCue() {
-        //updates direction unit vector
-
-        //Get unit vector of mouse position to white ball position 
-        directionX = mousePos.x - whiteBallPos.x; 
-        directionY = mousePos.y - whiteBallPos.y; 
-        double d = Math.sqrt(directionX * directionX + directionY * directionY);
-        directionX = directionX / d; 
-        directionY = directionY / d; 
-
-        repositionCue();
-    }
-
 
     //Repositions cue based on its current direction
-    public void repositionCue() {
-        //Reposition cue start and end based on this unit vector 
-        cueStart.x = whiteBallPos.x + (directionX * restingDistFromWhiteBall);
-        cueStart.y = whiteBallPos.y + (directionY * restingDistFromWhiteBall); 
-        cueEnd.x = whiteBallPos.x + (directionX * (restingDistFromWhiteBall + length)); 
-        cueEnd.y = whiteBallPos.y + (directionY * (restingDistFromWhiteBall + length)); 
-        
-        //Update vertices and hitbox
-        updateVerticesAndHitbox();
-    }
+    public abstract void repositionCue();
 
     //Taken from the edge functionality 
-    private void updateVerticesAndHitbox() {
+    protected void updateVerticesAndHitbox() {
         //Get normal unit vectors
         double nx = -1 * (cueEnd.y - cueStart.y);
         double ny = (cueEnd.x - cueStart.x);

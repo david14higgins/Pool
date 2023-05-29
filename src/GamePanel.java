@@ -145,7 +145,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         //Draw Cue
         g2.setColor(Color.black);
         if(poolGame.gameState == GameState.TAKING_SHOT) {
-            Polygon cueVertices = poolGame.cue.getCueVertices();
+            Polygon cueVertices = poolGame.aimingCue.getCueVertices();
             for (int i = 0; i < cueVertices.npoints; i++) {
                 //Update coordinates 
                 cueVertices.xpoints[i] += playAreaX;
@@ -201,7 +201,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 }
 
                 //Check if cue is selected
-                poolGame.cue.checkClicked(xGameClick, yGameClick);
+                poolGame.aimingCue.checkClicked(xGameClick, yGameClick);
 
                 // --------- For moving edges (disabled) ---------- 
                 //for (Edge ed : poolGame.edges) {
@@ -231,16 +231,16 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                     b.position.x = xGameClick;
                     b.position.y = yGameClick;
                     if (b.equals(poolGame.whiteBall)) {
-                        poolGame.cue.whiteBallPos = b.position;
-                        poolGame.cue.repositionCue();
+                        poolGame.aimingCue.whiteBallPos = b.position;
+                        poolGame.aimingCue.repositionCue();
                     } 
                 }
             }
 
             //Cue movement 
-            if(poolGame.cue.selected) {
-                poolGame.cue.mousePos = new Vector2D((xGameClick), yGameClick);
-                poolGame.cue.aimCue();
+            if(poolGame.aimingCue.selected) {
+                poolGame.aimingCue.mousePos = new Vector2D((xGameClick), yGameClick);
+                poolGame.aimingCue.aimCue();
             }
 
             /* --------- For moving edges (disabled) ---------- 
@@ -279,8 +279,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 }
                 */
 
-                //Deselect Cue 
-                poolGame.cue.selected = false;
+                //Deselect Cues 
+                poolGame.aimingCue.selected = false;
 
             //RIGHT CLICK - Dynamic Collisions
             } else if (e.getButton() == MouseEvent.BUTTON3) {

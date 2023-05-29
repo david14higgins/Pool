@@ -19,8 +19,8 @@ public class Pool {
     //Data structure for handling collisions
     public ArrayList<Ball[]> collidingPairs;
 
-    //Cue data structure
-    public Cue cue;
+    //Aming cue data structure
+    public AimingCue aimingCue;
 
     //Line segment data structures
     public ArrayList<Edge> edges;
@@ -80,8 +80,8 @@ public class Pool {
         balls.add(whiteBall);
 
         //Create Cue and initialize 
-        cue = new Cue(gameWidth, gameHeight);
-        cue.initializeCue(whiteBall.position);
+        aimingCue = new AimingCue();
+        aimingCue.initializeCue(whiteBall.position);
 
 
         //Create Pockets
