@@ -48,6 +48,8 @@ public class Pool {
 
     public GameState gameState;
 
+    private final int maxShotPower = 2000;
+
 
     public Pool(int width, int height) {
         this.gameWidth = width;
@@ -128,18 +130,7 @@ public class Pool {
     }
 
     public void update() {
-        
-
-        //Update mouse position
-        // if(mouseFocused) {
-        //     cue.setMouseX(mouseX);
-        //     cue.setMouseY(mouseY);
-        //     cue.setWhiteBallX((int) whiteBall.position.x);
-        //     cue.setWhiteBallY((int) whiteBall.position.y);
-        // }
-
-
-
+    
         //Reset on every update
         collidingPairs = new ArrayList<>();
 
@@ -304,14 +295,18 @@ public class Pool {
 
 
     //Probably needs changing
-    public void ballShoot() {
-        for (Ball b : balls) {
-            if (ballClicked(b, mouseDownX, mouseDownY)) {
-                b.velocity.x = 5 * (b.position.x - mouseUpX);
-                b.velocity.y = 5 * (b.position.y - mouseUpY);
-                b.stationary = false;
-            }
-        }
+    public void takeShot(double normalizedShotPower) {
+        whiteBall.velocity.x = normalizedShotPower * maxShotPower * aimingCue.getCueDirection().x;
+        whiteBall.velocity.y = normalizedShotPower * maxShotPower * aimingCue.getCueDirection().y;
+        System.out.println(normalizedShotPower * maxShotPower * aimingCue.getCueDirection().x);
+        System.out.println(normalizedShotPower * maxShotPower * aimingCue.getCueDirection().y);
+        // for (Ball b : balls) {
+        //     if (ballClicked(b, mouseDownX, mouseDownY)) {
+        //         b.velocity.x = 5 * (b.position.x - mouseUpX);
+        //         b.velocity.y = 5 * (b.position.y - mouseUpY);
+        //         b.stationary = false;
+        //     }
+        // }
         gameState = GameState.BALLS_MOVING;
 
     }
@@ -335,11 +330,4 @@ public class Pool {
         this.mouseY = mouseY;
     }
 
-    public boolean isMouseFocused() {
-        return mouseFocused;
-    }
-
-    public void setMouseFocused(boolean mouseFocused) {
-        this.mouseFocused = mouseFocused;
-    }
 }

@@ -292,9 +292,10 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        if (playArea.containsMouse(e.getX(), e.getY())) {
             int xGameClick = e.getX() - playArea.x;
             int yGameClick = e.getY() - playArea.y;
-
+    
             //LEFT CLICK - Static Collisions
             if(e.getButton() == MouseEvent.BUTTON1) {
                 //Deselect Ball (needs updating for white ball only)
@@ -303,26 +304,34 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                         b.selected = false;
                     }
                 }
-
-                /* Deselect Edges (no longer required)
-                for (Edge ed : poolGame.edges) {
-                    ed.startSelected = false;
-                    ed.endSelected = false;
-                }
-                */
-
-                //Deselect Cues 
+    
+                //Deselect aiming cue
                 poolGame.aimingCue.selected = false;
-                powerCue.selected = false;
-
-            //RIGHT CLICK - Dynamic Collisions
+                
+    
+            //RIGHT CLICK - Dynamic Collisions (To Be Removed!)
             } else if (e.getButton() == MouseEvent.BUTTON3) {
                 //Adjust click coordinates to reflect play area's (0,0) coordinate system
                 poolGame.mouseUpX = xGameClick;
                 poolGame.mouseUpY = yGameClick;
-                poolGame.ballShoot();
+                //poolGame.ballShoot();
             }
+        }
 
+        if (powerArea.containsMouse(e.getX(), e.getY())) {
+            int xPowerClick = e.getX() - powerArea.x;
+            int yPowerClick = e.getY() - powerArea.y;
+
+            
+
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                if (powerCue.selected) {
+                    powerCue.mouseUp = new Vector2D(xPowerClick, yPowerClick);
+                    double normalizedShotPower = powerCue.getNormalizedShotPower();
+                    poolGame.takeShot(normalizedShotPower);
+                }
+            }
+        }
 
     }
 
@@ -335,17 +344,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
     public void mouseExited(MouseEvent e) {}
 
     @Override
-    public void mouseMoved(MouseEvent e) {
-        if (playArea.containsMouse(e.getX(), e.getY())) {
-            int xGameClick = e.getX() - playArea.x;
-            int yGameClick = e.getY() - playArea.y;
-            poolGame.setMouseX(xGameClick);
-            poolGame.setMouseY(yGameClick);
-            poolGame.setMouseFocused(true);
-        } else {
-            poolGame.setMouseFocused(false);
-        }
-    }
+    public void mouseMoved(MouseEvent e) {}
 
     private void createCompartments() {
         compartments = new ArrayList<>();

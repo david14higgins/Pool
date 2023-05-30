@@ -19,7 +19,7 @@ public class AimingCue extends Cue{
         updateVerticesAndHitbox();
 
         //Inital direction unit vector is (-1, 0)
-        directionX = 1; 
+        directionX = -1; 
         directionY = 0;
     }
 
@@ -28,8 +28,8 @@ public class AimingCue extends Cue{
         //updates direction unit vector
 
         //Get unit vector of mouse position to white ball position 
-        directionX = mousePos.x - whiteBallPos.x; 
-        directionY = mousePos.y - whiteBallPos.y; 
+        directionX = whiteBallPos.x - mousePos.x; 
+        directionY = whiteBallPos.y - mousePos.y; 
         double d = Math.sqrt(directionX * directionX + directionY * directionY);
         directionX = directionX / d; 
         directionY = directionY / d; 
@@ -40,13 +40,17 @@ public class AimingCue extends Cue{
     //Repositions cue based on its current direction
     public void repositionCue() {
         //Reposition cue start and end based on this unit vector 
-        cueStart.x = whiteBallPos.x + (directionX * restingDistFromWhiteBall);
-        cueStart.y = whiteBallPos.y + (directionY * restingDistFromWhiteBall); 
-        cueEnd.x = whiteBallPos.x + (directionX * (restingDistFromWhiteBall + length)); 
-        cueEnd.y = whiteBallPos.y + (directionY * (restingDistFromWhiteBall + length)); 
+        cueStart.x = whiteBallPos.x - (directionX * restingDistFromWhiteBall);
+        cueStart.y = whiteBallPos.y - (directionY * restingDistFromWhiteBall); 
+        cueEnd.x = whiteBallPos.x - (directionX * (restingDistFromWhiteBall + length)); 
+        cueEnd.y = whiteBallPos.y - (directionY * (restingDistFromWhiteBall + length)); 
         
         //Update vertices and hitbox
         updateVerticesAndHitbox();
+    }
+
+    public Vector2D getCueDirection() {
+        return new Vector2D(directionX, directionY);
     }
 
 }
