@@ -194,7 +194,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (playArea.containsMouse(e.getX(), e.getY())){
+        if (playArea.containsMouse(e.getX(), e.getY()) && poolGame.gameState == GameState.TAKING_SHOT){
             //Shift coordinates to fit pool game's (0,0) coordinate system
             int xGameClick = e.getX() - playArea.x;
             int yGameClick = e.getY() - playArea.y;
@@ -224,7 +224,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             }
         }
 
-        if(powerArea.containsMouse(e.getX(), e.getY())) {
+        if(powerArea.containsMouse(e.getX(), e.getY()) && poolGame.gameState == GameState.TAKING_SHOT) {
             int xPowerClick = e.getX() - powerArea.x;
             int yPowerClick = e.getY() - powerArea.y;
 
