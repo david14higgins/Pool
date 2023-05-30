@@ -166,11 +166,11 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         g2.drawPolygon(cueVertices);
     
         //Drawing Power Cue 
-        Polygon cueHitboxVertices = poolGame.aimingCue.getCueHitboxVertices();
+        Polygon cueHitboxVertices = powerCue.getCueHitboxVertices();
         for (int i = 0; i < cueHitboxVertices.npoints; i++) {
             //Update coordinates 
-            cueHitboxVertices.xpoints[i] += playArea.x;
-            cueHitboxVertices.ypoints[i] += playArea.y;
+            cueHitboxVertices.xpoints[i] += powerArea.x;
+            cueHitboxVertices.ypoints[i] += powerArea.y;
         }
         g2.setColor(Color.red);
         g2.drawPolygon(cueHitboxVertices);
@@ -218,7 +218,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                     }
                 }
 
-                //Check if cue is selected
+                //Check if power cue is selected
                 poolGame.aimingCue.checkClicked(xGameClick, yGameClick);
 
                 // --------- For moving edges (disabled) ---------- 
@@ -231,6 +231,17 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 //Give pool game mouse down coordinates for shooting functionality
                 poolGame.mouseDownX = xGameClick;
                 poolGame.mouseDownY = yGameClick;
+            }
+        }
+
+        if(powerArea.containsMouse(e.getX(), e.getY())) {
+            int xPowerClick = e.getX() - powerArea.x;
+            int yPowerClick = e.getY() - powerArea.y;
+
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                if(powerCue.checkClicked(xPowerClick, yPowerClick)) {
+                    powerCue.mouseDown = new Vector2D(xPowerClick, yPowerClick);
+                }
             }
         }
     }
@@ -255,12 +266,13 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 }
             }
 
-            //Cue movement 
+            //Aiming cue movement 
             if(poolGame.aimingCue.selected) {
-                poolGame.aimingCue.mousePos = new Vector2D((xGameClick), yGameClick);
+                poolGame.aimingCue.mousePos = new Vector2D(xGameClick, yGameClick);
                 poolGame.aimingCue.aimCue();
             }
 
+        
             /* --------- For moving edges (disabled) ---------- 
             for (Edge ed : poolGame.edges) {
                 if(ed.startSelected) {
@@ -272,6 +284,19 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 }
             }
             */
+        }
+
+        if(powerArea.containsMouse(e.getX(), e.getY())) {
+            int xPowerClick = e.getX() - powerArea.x;
+            int yPowerClick = e.getY() - powerArea.y;
+
+            //Power cue movement 
+            if(powerCue.selected) {
+                powerCue.mousePos = new Vector2D(xPowerClick, yPowerClick);
+                powerCue.repositionCue();
+                System.out.println("Special Message");
+            }
+            
         }
 
     }
@@ -299,6 +324,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
                 //Deselect Cues 
                 poolGame.aimingCue.selected = false;
+                powerCue.selected = false;
 
             //RIGHT CLICK - Dynamic Collisions
             } else if (e.getButton() == MouseEvent.BUTTON3) {

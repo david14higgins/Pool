@@ -1,6 +1,4 @@
 public class AimingCue extends Cue{
-    //For position w.r.t. to the mouse
-    public Vector2D mousePos; 
     //For positioning w.r.t to the white ball 
     public Vector2D whiteBallPos;
     //Unit vector of aiming cue stick's current direction

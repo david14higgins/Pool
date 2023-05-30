@@ -9,6 +9,8 @@ public abstract class Cue {
     protected Vector2D cueStartNormalOne, cueStartNormalTwo, cueEndNormalOne, cueEndNormalTwo; 
     //Cue hitbox vertices coordinates
     protected Vector2D cueHitBoxVertexOne, cueHitBoxVertexTwo, cueHitBoxVertexThree, cueHitBoxVertexFour; 
+    //Cues need to know where the mouse is when it is being moved
+    protected Vector2D mousePos; 
     //Cue settings 
     protected final int length; 
     protected final int cueTipWidth; 
@@ -54,8 +56,9 @@ public abstract class Cue {
     }
 
     //Updates selected
-    public void checkClicked(int mouseX, int mouseY) {
+    public boolean checkClicked(int mouseX, int mouseY) {
         selected = this.getCueHitboxVertices().contains(mouseX, mouseY) ?  true : false;
+        return selected;
     }
 
 
