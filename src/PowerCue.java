@@ -11,10 +11,12 @@ public class PowerCue extends Cue {
     }
 
     public void repositionCue() {
-        double mouseDragYDistance = Math.abs(mouseDown.y - mousePos.y); 
-        cueStart = new Vector2D(compartmentWidth / 2, ((compartmentHeight - length) / 2) + mouseDragYDistance) ;
-        cueEnd = new Vector2D(compartmentWidth / 2, (compartmentHeight - (compartmentHeight - length) / 2) + mouseDragYDistance);
-        updateVerticesAndHitbox();
+        double mouseDragYDistance = mousePos.y - mouseDown.y; 
+        if (mouseDragYDistance > 0) {
+            cueStart = new Vector2D(compartmentWidth / 2, ((compartmentHeight - length) / 2) + mouseDragYDistance) ;
+            cueEnd = new Vector2D(compartmentWidth / 2, (compartmentHeight - (compartmentHeight - length) / 2) + mouseDragYDistance);
+            updateVerticesAndHitbox();
+        }
     }
 
     public void initializeCue() {
