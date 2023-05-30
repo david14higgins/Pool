@@ -37,7 +37,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         this.setFocusable(true);
         createCompartments();
         poolGame = new Pool(playArea.width, playArea.height);
-        powerCue = new PowerCue(450, 4, 8, powerArea.width, powerArea.height);
+        powerCue = new PowerCue(450, 6, powerArea.width, powerArea.height);
         powerCue.initializeCue();
     }
 
@@ -164,16 +164,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             cueVertices.ypoints[i] += powerArea.y;
         }
         g2.drawPolygon(cueVertices);
-    
-        //Drawing Power Cue 
-        Polygon cueHitboxVertices = powerCue.getCueHitboxVertices();
-        for (int i = 0; i < cueHitboxVertices.npoints; i++) {
-            //Update coordinates 
-            cueHitboxVertices.xpoints[i] += powerArea.x;
-            cueHitboxVertices.ypoints[i] += powerArea.y;
-        }
-        g2.setColor(Color.red);
-        g2.drawPolygon(cueHitboxVertices);
 
 
         //---------Paint Program Compartments-----------
@@ -294,7 +284,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             if(powerCue.selected) {
                 powerCue.mousePos = new Vector2D(xPowerClick, yPowerClick);
                 powerCue.repositionCue();
-                System.out.println("Special Message");
             }
             
         }

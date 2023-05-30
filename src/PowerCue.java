@@ -4,8 +4,8 @@ public class PowerCue extends Cue {
     public Vector2D mouseDown; 
     public Vector2D mouseUp; 
 
-    public PowerCue(int length, int cueTipWidth, int cueEndWidth, int compartmentWidth, int compartmentHeight) {
-        super(length, cueTipWidth, cueEndWidth);
+    public PowerCue(int length, int width, int compartmentWidth, int compartmentHeight) {
+        super(length, width);
         this.compartmentWidth = compartmentWidth;
         this.compartmentHeight = compartmentHeight;
     }
@@ -15,6 +15,9 @@ public class PowerCue extends Cue {
         if (mouseDragYDistance > 0) {
             cueStart = new Vector2D(compartmentWidth / 2, ((compartmentHeight - length) / 2) + mouseDragYDistance) ;
             cueEnd = new Vector2D(compartmentWidth / 2, (compartmentHeight - (compartmentHeight - length) / 2) + mouseDragYDistance);
+            if (cueEnd.y > compartmentHeight) {
+                cueEnd.y = compartmentHeight;
+            }
             updateVerticesAndHitbox();
         }
     }
@@ -27,5 +30,6 @@ public class PowerCue extends Cue {
         updateVerticesAndHitbox();
     }
 
+    
     
 }

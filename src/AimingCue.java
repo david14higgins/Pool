@@ -8,8 +8,8 @@ public class AimingCue extends Cue{
     private final int restingDistFromWhiteBall = 20;
 
 
-    public AimingCue(int length, int cueTipWidth, int cueEndWidth) {
-        super(length, cueTipWidth, cueEndWidth);
+    public AimingCue(int length, int width) {
+        super(length, width);
     }
 
     //Cue always sits horizontally to the right of white ball before it has been moved by player

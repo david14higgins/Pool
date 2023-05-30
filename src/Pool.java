@@ -80,7 +80,7 @@ public class Pool {
         balls.add(whiteBall);
 
         //Create Cue and initialize 
-        aimingCue = new AimingCue(300, 4, 6);
+        aimingCue = new AimingCue(300, 4);
         aimingCue.whiteBallPos = whiteBall.position;
         aimingCue.initializeCue();
 

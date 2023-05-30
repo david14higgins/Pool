@@ -13,17 +13,15 @@ public abstract class Cue {
     protected Vector2D mousePos; 
     //Cue settings 
     protected final int length; 
-    protected final int cueTipWidth; 
-    protected final int cueEndWidth;
+    protected final int width; 
     protected final int hitBoxWidth = 40; 
     //If cue has been clicked (default - not)
     public boolean selected = false;
 
 
-    public Cue(int length, int cueTipWidth, int cueEndWidth) {
+    public Cue(int length, int width) {
         this.length = length;
-        this.cueTipWidth = cueTipWidth; 
-        this.cueEndWidth = cueEndWidth; 
+        this.width = width;  
     }
 
     //Repositions cue based on its current direction - implemented differently by aiming cue and power cue
@@ -42,11 +40,11 @@ public abstract class Cue {
         ny = ny / d;
 
         //Calculate pool cue vertices 
-        cueStartNormalOne = new Vector2D(cueStart.x + nx * (cueTipWidth / 2), cueStart.y + ny * (cueTipWidth / 2));
-        cueStartNormalTwo = new Vector2D(cueStart.x - nx * (cueTipWidth / 2), cueStart.y - ny * (cueTipWidth / 2));
+        cueStartNormalOne = new Vector2D(cueStart.x + nx * (width / 2), cueStart.y + ny * (width / 2));
+        cueStartNormalTwo = new Vector2D(cueStart.x - nx * (width / 2), cueStart.y - ny * (width / 2));
         
-        cueEndNormalOne = new Vector2D(cueEnd.x + nx * (cueEndWidth / 2), cueEnd.y + ny * (cueEndWidth / 2));
-        cueEndNormalTwo = new Vector2D(cueEnd.x - nx * (cueEndWidth / 2), cueEnd.y - ny * (cueEndWidth / 2));
+        cueEndNormalOne = new Vector2D(cueEnd.x + nx * (width / 2), cueEnd.y + ny * (width / 2));
+        cueEndNormalTwo = new Vector2D(cueEnd.x - nx * (width / 2), cueEnd.y - ny * (width / 2));
         
         //Calculate pool cue hitbox Vertexs
         cueHitBoxVertexOne = new Vector2D(cueStart.x + nx * (hitBoxWidth / 2), cueStart.y + ny * (hitBoxWidth / 2));
