@@ -329,6 +329,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                     powerCue.mouseUp = new Vector2D(xPowerClick, yPowerClick);
                     double normalizedShotPower = powerCue.getNormalizedShotPower();
                     poolGame.takeShot(normalizedShotPower);
+                    powerCue.resetPowerCue();
                 }
             }
         }

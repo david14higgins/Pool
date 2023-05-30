@@ -40,6 +40,13 @@ public class PowerCue extends Cue {
         return (cueStart.y - cueStartDefaultY) / (compartmentHeight - cueStartDefaultY);
     }
 
+    public void resetPowerCue() {
+        initializeCue();
+        mousePos = null; 
+        mouseDown = null; 
+        mouseUp = null; 
+        selected = false;
+    }
     
     
 }

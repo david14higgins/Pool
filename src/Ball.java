@@ -7,7 +7,7 @@ public class Ball {
     public double mass;
     public int radius;
     public BallColours colour; //0=White, 1=Black, 2=Red, 3=Yellow
-    public boolean stationary;
+    private boolean stationary;
 
 
 
@@ -25,6 +25,10 @@ public class Ball {
     public void hit(double power) {
         velocity.x = -power/2 + Math.random() * power;
         velocity.y = -power/2 + Math.random() * power;
+    }
+
+    public boolean isStationary() {
+        return !((velocity.x * velocity.x + velocity.y * velocity.y) > 0);
     }
 
     public enum BallColours {

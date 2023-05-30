@@ -174,7 +174,6 @@ public class Pool {
             if (Math.pow(b.velocity.x, 2) + Math.pow(b.velocity.y, 2) < 0.1) {
                 b.velocity.x = 0;
                 b.velocity.y = 0;
-                b.stationary = true;
             }
         }
     }
@@ -236,13 +235,15 @@ public class Pool {
     private void checkBallsStationary() {
         boolean allStationary = true;
         for(Ball ball : balls) {
-            if(!ball.stationary) {
+            if(!ball.isStationary()) {
                 allStationary = false;
             }
         }
-        if(allStationary) {
+        if(allStationary) { 
             gameState = GameState.TAKING_SHOT;
+            aimingCue.repositionCue();
         }
+        System.out.println(allStationary);
     }
 
     private void checkForBallsCollision(Ball ball1, Ball ball2) {
@@ -284,8 +285,6 @@ public class Pool {
 
             ball1.velocity = Vector2D.subtract(ball1.velocity, Vector2D.scalar(v1_scalar, x1_x2));
             ball2.velocity = Vector2D.subtract(ball2.velocity, Vector2D.scalar(v2_scalar, x2_x1));
-            ball1.stationary = false;
-            ball2.stationary = false;
         }
     }
     //Should this be public?
@@ -304,7 +303,7 @@ public class Pool {
         //     if (ballClicked(b, mouseDownX, mouseDownY)) {
         //         b.velocity.x = 5 * (b.position.x - mouseUpX);
         //         b.velocity.y = 5 * (b.position.y - mouseUpY);
-        //         b.stationary = false;
+        //         b.stationar y = false;
         //     }
         // }
         gameState = GameState.BALLS_MOVING;
