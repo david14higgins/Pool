@@ -309,14 +309,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
     
                 //Deselect aiming cue
                 poolGame.aimingCue.selected = false;
-                
-    
-            //RIGHT CLICK - Dynamic Collisions (To Be Removed!)
-            } else if (e.getButton() == MouseEvent.BUTTON3) {
-                //Adjust click coordinates to reflect play area's (0,0) coordinate system
-                poolGame.mouseUpX = xGameClick;
-                poolGame.mouseUpY = yGameClick;
-                //poolGame.ballShoot();
             }
         }
 
