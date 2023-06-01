@@ -28,6 +28,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
     PowerCue powerCue;
 
+    private final double minShotPower = 0.05;
+
     public GamePanel() {
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.setBackground(Color.gray);
@@ -320,7 +322,10 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 if (powerCue.selected) {
                     powerCue.mouseUp = new Vector2D(xPowerClick, yPowerClick);
                     double normalizedShotPower = powerCue.getNormalizedShotPower();
-                    poolGame.takeShot(normalizedShotPower);
+                    //Only take shot if minimum shot power reached 
+                    if (normalizedShotPower > minShotPower) {
+                        poolGame.takeShot(normalizedShotPower);
+                    }
                     powerCue.resetPowerCue();
                 }
             }
