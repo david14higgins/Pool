@@ -5,7 +5,10 @@ public class AimingCue extends Cue{
     private double directionX; 
     private double directionY; 
     //How far cue is drawn from the white ball (needs updating when power cue implemented)
-    private final int restingDistFromWhiteBall = 20;
+    private final int minDragDistance = 20;
+    public final int maxDragDistance = 300;
+    public int dragDistance = 0; 
+    
 
 
     public AimingCue(int length, int width) {
@@ -14,7 +17,7 @@ public class AimingCue extends Cue{
 
     //Cue always sits horizontally to the right of white ball before it has been moved by player
     public void initializeCue() {
-        cueStart = new Vector2D(whiteBallPos.x + restingDistFromWhiteBall, whiteBallPos.y);
+        cueStart = new Vector2D(whiteBallPos.x + minDragDistance, whiteBallPos.y);
         cueEnd = new Vector2D(cueStart.x + length, cueStart.y); 
         updateVerticesAndHitbox();
 
@@ -40,10 +43,10 @@ public class AimingCue extends Cue{
     //Repositions cue based on its current direction
     public void repositionCue() {
         //Reposition cue start and end based on this unit vector 
-        cueStart.x = whiteBallPos.x - (directionX * restingDistFromWhiteBall);
-        cueStart.y = whiteBallPos.y - (directionY * restingDistFromWhiteBall); 
-        cueEnd.x = whiteBallPos.x - (directionX * (restingDistFromWhiteBall + length)); 
-        cueEnd.y = whiteBallPos.y - (directionY * (restingDistFromWhiteBall + length)); 
+        cueStart.x = whiteBallPos.x - (directionX * (minDragDistance + dragDistance));
+        cueStart.y = whiteBallPos.y - (directionY * (minDragDistance + dragDistance)); 
+        cueEnd.x = whiteBallPos.x - (directionX * (minDragDistance + dragDistance + length)); 
+        cueEnd.y = whiteBallPos.y - (directionY * (minDragDistance + dragDistance + length)); 
         
         //Update vertices and hitbox
         updateVerticesAndHitbox();

@@ -243,7 +243,6 @@ public class Pool {
             gameState = GameState.TAKING_SHOT;
             aimingCue.repositionCue();
         }
-        System.out.println(allStationary);
     }
 
     private void checkForBallsCollision(Ball ball1, Ball ball2) {

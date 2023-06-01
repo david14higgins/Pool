@@ -283,6 +283,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             //Power cue movement 
             if(powerCue.selected) {
                 powerCue.mousePos = new Vector2D(xPowerClick, yPowerClick);
+                double normalizedShotPower = powerCue.getNormalizedShotPower(); 
+                poolGame.aimingCue.dragDistance = (int) (poolGame.aimingCue.maxDragDistance * normalizedShotPower);
                 powerCue.repositionCue();
             }
             
@@ -322,8 +324,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             int xPowerClick = e.getX() - powerArea.x;
             int yPowerClick = e.getY() - powerArea.y;
 
-            
-
             if (e.getButton() == MouseEvent.BUTTON1) {
                 if (powerCue.selected) {
                     powerCue.mouseUp = new Vector2D(xPowerClick, yPowerClick);
@@ -332,6 +332,9 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                     powerCue.resetPowerCue();
                 }
             }
+
+            //
+            poolGame.aimingCue.dragDistance = 0;
         }
 
     }
