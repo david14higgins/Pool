@@ -63,41 +63,50 @@ public class Pool {
     private void createBalls() {
         //Create balls
         balls = new ArrayList<>();
-        edges = new ArrayList<>();
-
+        
         int ballRadius = 12 ;
 
         //White ball
         whiteBall = new Ball(ballRadius, new Vector2D(3 * gameWidth / 4, gameHeight / 2), Ball.BallColours.White);
         balls.add(whiteBall);
 
-        //How distant adjacent columns x values are
-        int ballsDistanceX = (int) Math.ceil(Math.sqrt(3) * ballRadius); 
-
-        //This position updates and sets the ball position
-        Vector2D ballPosition = new Vector2D((gameWidth / 4) + (2 * ballsDistanceX), gameHeight / 2);
+        //The following positions balls in their triangle 
 
         //Order of balls going left to right, top to bottom in triangle
         String ballOrder = "YRYYBRRYRYYRRYR";
-        int progress = 0; 
+        //Tracks progress for assigning colour
+        int orderProgress = 0; 
 
+        //How distant adjacent columns x values are
+        int ballsDistanceX = (int) Math.ceil(Math.sqrt(3) * ballRadius); 
+
+        //This variable updates for setting the ball position
+        Vector2D ballPosition = new Vector2D((gameWidth / 4) + (2 * ballsDistanceX), gameHeight / 2);
+
+        //Iterate right to left in triangle 
         for (int i = 0; i < 5; i++) {
+            //Iterate each column in the triangle top to bottom 
             for (int j = 0; j <= i; j++) {
-                //Bit of a long winded way of passing colour but this for loop structure is suitable
-                char ballColourChar = ballOrder.charAt(progress);
+                //Pick ball colour - bit long winded, can probably be improved
+                char ballColourChar = ballOrder.charAt(orderProgress);
                 Ball.BallColours ballColour = null; 
                 switch(ballColourChar) {
                     case 'Y': ballColour = Ball.BallColours.Yellow; break;
                     case 'R': ballColour = Ball.BallColours.Red; break; 
                     case 'B': ballColour = Ball.BallColours.Black; break; 
                 }
+                //Create ball, add to data structure and update progress 
                 Ball ball = new Ball(ballRadius, new Vector2D(ballPosition.x, ballPosition.y), ballColour);
                 balls.add(ball);
-                progress += 1;
+                orderProgress += 1;
 
+                //Recalculate position variable for the next ball 
+                //For balls in the same column, we just move down the distance of one ball 
                 ballPosition.y = ballPosition.y + (2 * ballRadius);
             }
+            //When moving to the next column, update the x value by the special x distance we calculated (pythag)
             ballPosition.x = ballPosition.x - ballsDistanceX;
+            //Also reset y to new height
             ballPosition.y = (gameHeight / 2) - ((i + 1) * ballRadius); 
         }
     }
@@ -127,24 +136,26 @@ public class Pool {
     }
 
     private void createCushions() {
-         //Create Cushions
-         int edgeRadius = 6;
+        edges = new ArrayList<>();
+
+        //Create Cushions
+        int edgeRadius = 6;
  
-         //Retrieve two pockets for information purposes
-         Pocket ul = pockets.get(Pocket.Position.UpperLeft);
-         Pocket um = pockets.get(Pocket.Position.UpperMiddle);
+        //Retrieve two pockets for information purposes
+        Pocket ul = pockets.get(Pocket.Position.UpperLeft);
+        Pocket um = pockets.get(Pocket.Position.UpperMiddle);
  
-         CushionsInfo info = new CushionsInfo(ul.radius, um.radius, edgeRadius, gameWidth, gameHeight);
+        CushionsInfo info = new CushionsInfo(ul.radius, um.radius, edgeRadius, gameWidth, gameHeight);
  
-         for (CushionsInfo.Cushion cushion: CushionsInfo.Cushion.values()) {
-             Vector2D[] coords = info.getCushionCoords(cushion);
-             for (int k = 0; k < coords.length - 1; k++) {
-                 Vector2D start = coords[k];
-                 Vector2D end = coords[k+1];
-                 Edge edge = new Edge(start.x, start.y, end.x, end.y, edgeRadius);
-                 edges.add(edge);
-             }
-         }
+        for (CushionsInfo.Cushion cushion: CushionsInfo.Cushion.values()) {
+            Vector2D[] coords = info.getCushionCoords(cushion);
+            for (int k = 0; k < coords.length - 1; k++) {
+                Vector2D start = coords[k];
+                Vector2D end = coords[k+1];
+                Edge edge = new Edge(start.x, start.y, end.x, end.y, edgeRadius);
+                edges.add(edge);
+            }
+        }
     }
 
 
