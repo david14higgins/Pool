@@ -28,7 +28,7 @@ public class Ball {
     }
 
     public boolean isStationary() {
-        return !((velocity.x * velocity.x + velocity.y * velocity.y) > 0);
+        return !((velocity.x * velocity.x + velocity.y * velocity.y) > 5);
     }
 
     public enum BallColours {

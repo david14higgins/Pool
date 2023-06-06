@@ -28,7 +28,7 @@ public class Pool {
     //Pockets data structure
     public HashMap<Pocket.Position, Pocket> pockets;
 
-    public static final double DRAG = 0.7;
+    public static final double DRAG = 0.8;
 
     public boolean ready = false;
 
