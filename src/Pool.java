@@ -68,7 +68,9 @@ public class Pool {
         balls.add(whiteBall);
 
         //Triange of balls positioned based on black ball location 
-        Vector2D blackBallPos 
+        Vector2D blackBallPos = new Vector2D(gameWidth / 4, gameHeight / 2);
+
+        String ballOrder = "";
 
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j <= i; j++) {
