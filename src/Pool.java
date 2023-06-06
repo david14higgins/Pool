@@ -63,20 +63,40 @@ public class Pool {
         int ballRadius = 12 ;
 
         //White ball
-        whiteBall = new Ball(ballRadius, Ball.BallColours.White);
-        whiteBall.position = new Vector2D(3 * gameWidth / 4, gameHeight / 2);
+        whiteBall = new Ball(ballRadius, new Vector2D(3 * gameWidth / 4, gameHeight / 2), Ball.BallColours.White);
         balls.add(whiteBall);
 
-        //Triange of balls positioned based on black ball location 
-        Vector2D blackBallPos = new Vector2D(gameWidth / 4, gameHeight / 2);
+        //How distant adjacent columns x values are
+        int ballsDistanceX = (int) Math.ceil(Math.sqrt(3) * ballRadius); 
 
-        String ballOrder = "";
+        //This position updates and sets the ball position
+        Vector2D ballPosition = new Vector2D((gameWidth / 4) + (2 * ballsDistanceX), gameHeight / 2);
+
+        //Order of balls going left to right, top to bottom in triangle
+        String ballOrder = "YRYYBRRYRYYRRYR";
+        int progress = 0; 
+        int column = 0;
 
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j <= i; j++) {
-                
+                //Bit of a long winded way of passing colour but this for loop structure is suitable
+                char ballColourChar = ballOrder.charAt(progress);
+                Ball.BallColours ballColour = null; 
+                switch(ballColourChar) {
+                    case 'Y': ballColour = Ball.BallColours.Yellow; break;
+                    case 'R': ballColour = Ball.BallColours.Red; break; 
+                    case 'B': ballColour = Ball.BallColours.Black; break; 
+                }
+                Ball ball = new Ball(ballRadius, ballPosition, ballColour);
+                balls.add(ball);
+
+                ballPosition.y = ballPosition.y + (2 * ballRadius);
             }
+            ballPosition.x = ballPosition.x - ballsDistanceX;
+            ballPosition.y = (gameHeight / 2) - ((i + 1) * ballRadius); 
         }
+
+
 
 
         //for (int i = 0; i < 7; i++) {
@@ -237,8 +257,7 @@ public class Pool {
     private void handleEdgeCollision(Edge edge, Ball ball, double distance, Vector2D closestPoint) {
         //Create a fake ball for collision
         //Ball fakeBall = new Ball(closestPoint.x, closestPoint.y, edge.radius, -1, null);
-        Ball fakeBall = new Ball(edge.radius, null);
-        fakeBall.position = new Vector2D(closestPoint.x, closestPoint.y);
+        Ball fakeBall = new Ball(edge.radius, new Vector2D(closestPoint.x, closestPoint.y), null);
         fakeBall.mass = ball.mass;
         fakeBall.velocity.x = -1 * ball.velocity.x;
         fakeBall.velocity.y = -1 * ball.velocity.y;

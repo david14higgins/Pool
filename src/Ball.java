@@ -10,10 +10,11 @@ public class Ball {
 
 
 
-    public Ball(int radius, BallColours colour) {
+    public Ball(int radius, Vector2D position,  BallColours colour) {
         this.radius = radius;
         this.mass = 10 * radius;
         this.colour = colour;
+        this.position = position; 
     }
 
 
