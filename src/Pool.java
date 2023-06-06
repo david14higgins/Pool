@@ -62,24 +62,39 @@ public class Pool {
 
         int ballRadius = 12 ;
 
-        for (int i = 0; i < 7; i++) {
-            //Yellow ball
-            Ball yBall = new Ball(yellowBallPos[i][0], yellowBallPos[i][1], ballRadius, 2 * i, Ball.BallColours.Yellow);
-            balls.add(yBall);
-            yellowBalls[i] = yBall;
+        //White ball
+        whiteBall = new Ball(ballRadius, Ball.BallColours.White);
+        whiteBall.position = new Vector2D(3 * gameWidth / 4, gameHeight / 2);
+        balls.add(whiteBall);
 
-            //Red ball
-            Ball rBall = new Ball(redBallPos[i][0], redBallPos[i][1], ballRadius, 2 * i + 1, Ball.BallColours.Red);
-            balls.add(rBall);
-            redBalls[i] = rBall;
+        //Triange of balls positioned based on black ball location 
+        Vector2D blackBallPos 
+
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j <= i; j++) {
+                
+            }
         }
 
+
+        //for (int i = 0; i < 7; i++) {
+        //    //Yellow ball
+        //    //Ball yBall = new Ball(yellowBallPos[i][0], yellowBallPos[i][1], ballRadius, 2 * i, Ball.BallColours.Yellow);
+        //    Ball yBall = new Ball(ballRadius, Ball.BallColours.Yellow);
+        //    balls.add(yBall);
+        //    yellowBalls[i] = yBall;
+
+            //Red ball
+            //Ball rBall = new Ball(redBallPos[i][0], redBallPos[i][1], ballRadius, 2 * i + 1, Ball.BallColours.Red);
+        //    Ball rBall = new Ball(ballRadius, Ball.BallColours.Red);
+        //    balls.add(rBall);
+        //    redBalls[i] = rBall;
+        //}
+
         //Black ball
-        blackBall = new Ball(270, 270, ballRadius, 14, Ball.BallColours.Black);
-        balls.add(blackBall);
-        //White ball
-        whiteBall = new Ball(810, 270, ballRadius, 15, Ball.BallColours.White);
-        balls.add(whiteBall);
+        //blackBall = new Ball(270, 270, ballRadius, 14, Ball.BallColours.Black);
+        //blackBall = new Ball(ballRadius, Ball.BallColours.Black);
+        //balls.add(blackBall);
 
         //Create Cue and initialize 
         aimingCue = new AimingCue(300, 4);
@@ -219,7 +234,9 @@ public class Pool {
 
     private void handleEdgeCollision(Edge edge, Ball ball, double distance, Vector2D closestPoint) {
         //Create a fake ball for collision
-        Ball fakeBall = new Ball(closestPoint.x, closestPoint.y, edge.radius, -1, null);
+        //Ball fakeBall = new Ball(closestPoint.x, closestPoint.y, edge.radius, -1, null);
+        Ball fakeBall = new Ball(edge.radius, null);
+        fakeBall.position = new Vector2D(closestPoint.x, closestPoint.y);
         fakeBall.mass = ball.mass;
         fakeBall.velocity.x = -1 * ball.velocity.x;
         fakeBall.velocity.y = -1 * ball.velocity.y;
