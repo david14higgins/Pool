@@ -38,13 +38,8 @@ public class Pool {
     public double mouseUpX;
     public double mouseUpY;
 
-    //These coordinates are totally dependent on the size of the balls and the play area
-    private double[][] yellowBallPos = {{322, 270}, {296, 285}, {270, 240}, {244, 255}, {244, 315}, {218, 210}, {218, 300}};
-    private double[][] redBallPos = {{296, 255}, {270, 300}, {244, 225}, {244, 285}, {218, 240}, {218, 270}, {218, 330}};
-
     private int mouseX;
     private int mouseY;
-    private boolean mouseFocused;
 
     public GameState gameState;
 
@@ -75,7 +70,6 @@ public class Pool {
         //Order of balls going left to right, top to bottom in triangle
         String ballOrder = "YRYYBRRYRYYRRYR";
         int progress = 0; 
-        int column = 0;
 
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j <= i; j++) {
@@ -87,8 +81,9 @@ public class Pool {
                     case 'R': ballColour = Ball.BallColours.Red; break; 
                     case 'B': ballColour = Ball.BallColours.Black; break; 
                 }
-                Ball ball = new Ball(ballRadius, ballPosition, ballColour);
+                Ball ball = new Ball(ballRadius, new Vector2D(ballPosition.x, ballPosition.y), ballColour);
                 balls.add(ball);
+                progress += 1;
 
                 ballPosition.y = ballPosition.y + (2 * ballRadius);
             }
@@ -96,27 +91,6 @@ public class Pool {
             ballPosition.y = (gameHeight / 2) - ((i + 1) * ballRadius); 
         }
 
-
-
-
-        //for (int i = 0; i < 7; i++) {
-        //    //Yellow ball
-        //    //Ball yBall = new Ball(yellowBallPos[i][0], yellowBallPos[i][1], ballRadius, 2 * i, Ball.BallColours.Yellow);
-        //    Ball yBall = new Ball(ballRadius, Ball.BallColours.Yellow);
-        //    balls.add(yBall);
-        //    yellowBalls[i] = yBall;
-
-            //Red ball
-            //Ball rBall = new Ball(redBallPos[i][0], redBallPos[i][1], ballRadius, 2 * i + 1, Ball.BallColours.Red);
-        //    Ball rBall = new Ball(ballRadius, Ball.BallColours.Red);
-        //    balls.add(rBall);
-        //    redBalls[i] = rBall;
-        //}
-
-        //Black ball
-        //blackBall = new Ball(270, 270, ballRadius, 14, Ball.BallColours.Black);
-        //blackBall = new Ball(ballRadius, Ball.BallColours.Black);
-        //balls.add(blackBall);
 
         //Create Cue and initialize 
         aimingCue = new AimingCue(300, 4);
@@ -334,17 +308,7 @@ public class Pool {
     public void takeShot(double normalizedShotPower) {
         whiteBall.velocity.x = normalizedShotPower * maxShotPower * aimingCue.getCueDirection().x;
         whiteBall.velocity.y = normalizedShotPower * maxShotPower * aimingCue.getCueDirection().y;
-        System.out.println(normalizedShotPower * maxShotPower * aimingCue.getCueDirection().x);
-        System.out.println(normalizedShotPower * maxShotPower * aimingCue.getCueDirection().y);
-        // for (Ball b : balls) {
-        //     if (ballClicked(b, mouseDownX, mouseDownY)) {
-        //         b.velocity.x = 5 * (b.position.x - mouseUpX);
-        //         b.velocity.y = 5 * (b.position.y - mouseUpY);
-        //         b.stationar y = false;
-        //     }
-        // }
         gameState = GameState.BALLS_MOVING;
-
     }
 
     //Getters and Setters
