@@ -46,6 +46,11 @@ public class Pool {
     private final int maxShotPower = 2000;
 
     public Ball predictBall = new Ball(12, new Vector2D(0, 0), null); 
+    public boolean willHitBall = false; 
+    public Vector2D whiteBallPredictionSource;
+    public Vector2D whiteBallPredictionDestination; 
+    public Vector2D targetBallPredictionSource; 
+    public Vector2D targetBallPredictionDestination;
 
 
     public Pool(int width, int height) {
@@ -364,6 +369,7 @@ public class Pool {
                 if (checkForEdgeCollision(edge, fakeWhiteBall, false)) {
                     predictBall.position = fakeWhiteBall.position; 
                     collision = true;
+                    willHitBall = false;
                 }
             }
 
@@ -372,10 +378,32 @@ public class Pool {
                     if(checkForBallsCollision(fakeWhiteBall, ball, false)) {
                         predictBall.position = fakeWhiteBall.position; 
                         collision = true;
+                        willHitBall = true;
+
+                        //
+                        fakeWhiteBall.velocity = new Vector2D(100 * aimingCue.getCueDirection().x, 100 * aimingCue.getCueDirection().y);
+                        double totalMass = fakeWhiteBall.mass + ball.mass;
+                        Vector2D x1_x2 = Vector2D.subtract(fakeWhiteBall.position, ball.position);
+                        Vector2D x2_x1 = Vector2D.subtract(ball.position, fakeWhiteBall.position);
+                        Vector2D v1_v2 = Vector2D.subtract(fakeWhiteBall.velocity, ball.velocity);
+                        Vector2D v2_v1 = Vector2D.subtract(ball.velocity, fakeWhiteBall.velocity);
+                        double v1_scalar = 2*ball.mass / totalMass * Vector2D.dotProduct(v1_v2, x1_x2) / Math.pow(Vector2D.magnitude(x1_x2), 2);
+                        double v2_scalar = 2*fakeWhiteBall.mass / totalMass * Vector2D.dotProduct(v2_v1, x2_x1) / Math.pow(Vector2D.magnitude(x2_x1), 2);
+
+                        Vector2D fakeWhiteBallDirection = Vector2D.unitVector(Vector2D.subtract(fakeWhiteBall.velocity, Vector2D.scalar(v1_scalar, x1_x2)));
+                        Vector2D ballDirection = Vector2D.unitVector(Vector2D.subtract(ball.velocity, Vector2D.scalar(v2_scalar, x2_x1)));
+
+                        whiteBallPredictionSource = new Vector2D(fakeWhiteBall.position.x, fakeWhiteBall.position.y);
+                        whiteBallPredictionDestination = new Vector2D(fakeWhiteBall.position.x + fakeWhiteBallDirection.x * 20, fakeWhiteBall.position.y + fakeWhiteBallDirection.y * 20);
+
+                        targetBallPredictionSource = new Vector2D(ball.position.x, ball.position.y);
+                        targetBallPredictionDestination = new Vector2D(ball.position.x + ballDirection.x * 40, ball.position.y + ballDirection.y * 40);
+                        
                     }
                 }
             }
-        }   
+        }
+        
     }
 
 

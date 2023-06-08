@@ -178,6 +178,10 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         int whitePaintYPos = (int) poolGame.whiteBall.position.y - poolGame.whiteBall.radius;
         g2.drawLine(playArea.x + ((int) poolGame.predictBall.position.x), playArea.y + ((int) poolGame.predictBall.position.y), playArea.x + ((int) poolGame.whiteBall.position.x), playArea.y + ((int) poolGame.whiteBall.position.y));
 
+        if(poolGame.willHitBall) {
+            g2.drawLine(playArea.x + ((int) poolGame.whiteBallPredictionSource.x), playArea.y + ((int) poolGame.whiteBallPredictionSource.y), playArea.x + ((int) poolGame.whiteBallPredictionDestination.x), playArea.y + ((int) poolGame.whiteBallPredictionDestination.y)); 
+            g2.drawLine(playArea.x + ((int) poolGame.targetBallPredictionSource.x), playArea.y + ((int) poolGame.targetBallPredictionSource.y), playArea.x + ((int) poolGame.targetBallPredictionDestination.x), playArea.y + ((int) poolGame.targetBallPredictionDestination.y));
+        }
 
         //---------Paint Program Compartments-----------
 

@@ -25,5 +25,10 @@ public class Vector2D {
         return Math.sqrt(Math.pow(vec.x, 2) + Math.pow(vec.y, 2));
     }
 
+    public static Vector2D unitVector(Vector2D vec) {
+        double magnitude = Vector2D.magnitude(vec);
+        return new Vector2D(vec.x / magnitude, vec.y / magnitude);
+    }
+
 
 }
