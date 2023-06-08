@@ -45,7 +45,7 @@ public class Pool {
 
     private final int maxShotPower = 2000;
 
-    public Vector2D predictionPoint = new Vector2D(100, 100);
+    public Ball predictBall = new Ball(12, new Vector2D(0, 0), null); 
 
 
     public Pool(int width, int height) {
@@ -362,8 +362,17 @@ public class Pool {
             
             for (Edge edge : edges) {
                 if (checkForEdgeCollision(edge, fakeWhiteBall, false)) {
-                    predictionPoint = fakeWhiteBall.position; 
+                    predictBall.position = fakeWhiteBall.position; 
                     collision = true;
+                }
+            }
+
+            for (Ball ball : balls) {
+                if (ball.colour != Ball.BallColours.White) {
+                    if(checkForBallsCollision(fakeWhiteBall, ball, false)) {
+                        predictBall.position = fakeWhiteBall.position; 
+                        collision = true;
+                    }
                 }
             }
         }   

@@ -169,8 +169,11 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
 
         //Draw Shot Prediction 
-        g2.setColor(Color.RED);
-        g2.fillArc(playArea.x + (int) poolGame.predictionPoint.x, (int) poolGame.predictionPoint.y, 12, 12, 0, 360);
+        g2.setColor(Color.PINK);
+        int paintXPos = (int) poolGame.predictBall.position.x - poolGame.predictBall.radius; 
+        int paintYPos = (int) poolGame.predictBall.position.y - poolGame.predictBall.radius; 
+        int diameter = poolGame.predictBall.radius * 2;
+        g2.drawArc(playArea.x + paintXPos, playArea.y + paintYPos, diameter, diameter, 0, 360);
 
         //---------Paint Program Compartments-----------
 
