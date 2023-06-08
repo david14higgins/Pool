@@ -143,7 +143,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             int paintPointX = (int) pocket.getPositionVec().x - pocket.radius;
             int paintPointY = (int) pocket.getPositionVec().y - pocket.radius;
             int diameter = pocket.radius * 2;
-            g2.fillArc(playArea.x + paintPointX, playArea.y + paintPointY, diameter, diameter, 0, 360);
+            //g2.fillArc(playArea.x + paintPointX, playArea.y + paintPointY, diameter, diameter, 0, 360);
         }
 
         //Draw Aiming Cue

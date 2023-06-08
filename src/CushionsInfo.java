@@ -14,7 +14,7 @@ public class CushionsInfo {
     //distance from middle edge to other edge
     private int dist4;
 
-    Vector2D[] cushionCoords = new Vector2D[28];
+    Vector2D[] cushionCoords = new Vector2D[29];
 
 
     public CushionsInfo(int cornerPocketRadius, int middlePocketRadius, int edgeRadius, int gameWidth, int gameHeight) {
@@ -82,6 +82,9 @@ public class CushionsInfo {
         cushionCoords[25] = new Vector2D(dist2, gameHeight - cornerPocketRadius - dist1 - (dist2 - edgeRadius));
         cushionCoords[26] = new Vector2D(dist2, cornerPocketRadius + dist1 + (dist2 - edgeRadius));
         cushionCoords[27] = new Vector2D(edgeRadius, cornerPocketRadius + dist1);
+
+        //Top Left Corner (repeated to create a cyclical DS and make cushion creation a simple iteration)
+        cushionCoords[28] = new Vector2D(edgeRadius, edgeRadius);
     }
 
     public Vector2D[] getCushionCoords() {

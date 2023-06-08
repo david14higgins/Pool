@@ -149,6 +149,7 @@ public class Pool {
 
         Vector2D cushionEndCoords[] = info.getCushionCoords();
 
+        //first and last element of above array is the same so straightforward loop can be used 
         for (int i = 0; i < cushionEndCoords.length - 1; i++) {
             Vector2D start = cushionEndCoords[i];
             Vector2D end = cushionEndCoords[i+1];
@@ -156,11 +157,6 @@ public class Pool {
             edges.add(edge);
         }
 
-        //Add closing edge 
-        Vector2D start = cushionEndCoords[cushionEndCoords.length - 1];
-        Vector2D end = cushionEndCoords[0];
-        Edge edge = new Edge(start.x, start.y, end.x, end.y, edgeRadius);
-        edges.add(edge);
     }
 
 
