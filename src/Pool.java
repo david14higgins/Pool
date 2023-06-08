@@ -45,6 +45,8 @@ public class Pool {
 
     private final int maxShotPower = 2000;
 
+    public Vector2D predictionPoint = new Vector2D(100, 100);
+
 
     public Pool(int width, int height) {
         this.gameWidth = width;
@@ -162,24 +164,29 @@ public class Pool {
 
     public void update() {
     
-        //Reset on every update
-        collidingPairs = new ArrayList<>();
+        if (gameState == gameState.BALLS_MOVING) {
+            //Reset on every update
+            collidingPairs = new ArrayList<>();
 
-        for (int n = 0; n < GamePanel.nSimulationUpdates; n++) {
-            //Move the balls
-            moveBalls();
-            //Check for collisions
-            checkForCollision();
-            //Static Collisions
-            handleStaticCollisions();
-            //Dynamic Collisions
-            handleDynamicCollisions();
-            //Clear colliding balls
-            collidingPairs.clear();
-            //Check balls have stopped moving
-            checkBallsStationary();
+            for (int n = 0; n < GamePanel.nSimulationUpdates; n++) {
+                //Move the balls
+                moveBalls();
+                //Check for collisions
+                checkForCollision();
+                //Static Collisions
+                handleStaticCollisions();
+                //Dynamic Collisions
+                handleDynamicCollisions();
+                //Clear colliding balls
+                collidingPairs.clear();
+                //Check balls have stopped moving
+                checkBallsStationary();
+            }
+        } else if(gameState == gameState.TAKING_SHOT) {
+            aimingCue.repositionCue();
         }
     }
+
 
     public void moveBalls() {
         for (Ball b : balls) {
@@ -214,13 +221,13 @@ public class Pool {
     private void checkForCollision() {
         for(int i = 0; i < balls.size(); i++) {
             for (Edge edge : edges) {
-                checkForEdgeCollision(edge, balls.get(i));
+                checkForEdgeCollision(edge, balls.get(i), true);
             }
 
             //Check for collisions between different balls
             for(int j = i + 1; j < balls.size(); j++) {
                 if(i != j) {
-                    checkForBallsCollision(balls.get(i), balls.get(j));
+                    checkForBallsCollision(balls.get(i), balls.get(j), true);
                 }
 
             }
@@ -228,7 +235,9 @@ public class Pool {
     }
 
     //We check and handle in one method since values computed in the check are useful in the handling
-    private void checkForEdgeCollision(Edge edge, Ball currentBall) {
+    private boolean checkForEdgeCollision(Edge edge, Ball currentBall, boolean handle) {
+        //Handle declares if we want to handle the collision or just detect it
+
         double lineX1 = edge.getEnd().x - edge.getStart().x;
         double lineY1 = edge.getEnd().y - edge.getStart().y;
 
@@ -244,7 +253,12 @@ public class Pool {
         double distance = Math.sqrt(Math.pow((currentBall.position.x - closestPoint.x), 2) + Math.pow((currentBall.position.y - closestPoint.y), 2));
 
         if (distance <= currentBall.radius + edge.radius) {
-            handleEdgeCollision(edge, currentBall, distance, closestPoint);
+            if (handle) {
+                handleEdgeCollision(edge, currentBall, distance, closestPoint);
+            }
+            return true; 
+        } else {
+            return false;
         }
     }
 
@@ -273,14 +287,20 @@ public class Pool {
         }
         if(allStationary) { 
             gameState = GameState.TAKING_SHOT;
-            aimingCue.repositionCue();
         }
     }
 
-    private void checkForBallsCollision(Ball ball1, Ball ball2) {
+    private boolean checkForBallsCollision(Ball ball1, Ball ball2, boolean handle) {
+        //Handle declares if we want to handle the collision or just detect it
+
         Ball[] ballsPair = new Ball[] {ball1, ball2};
         if(Math.pow(ball1.position.x - ball2.position.x, 2) + Math.pow(ball1.position.y - ball2.position.y, 2) <= Math.pow(ball1.radius + ball2.radius,2)) {
-            collidingPairs.add(ballsPair);
+            if (handle) {
+                collidingPairs.add(ballsPair);
+            }
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -330,6 +350,25 @@ public class Pool {
         whiteBall.velocity.y = normalizedShotPower * maxShotPower * aimingCue.getCueDirection().y;
         gameState = GameState.BALLS_MOVING;
     }
+
+    //Shot Prediction 
+    public void updateShotPrediction() {
+        //create fake white ball 
+        Ball fakeWhiteBall = new Ball(whiteBall.radius, new Vector2D(whiteBall.position.x, whiteBall.position.y), null);
+        boolean collision = false; 
+        while(!collision) {
+            Vector2D newPos = new Vector2D(fakeWhiteBall.position.x + aimingCue.getCueDirection().x, fakeWhiteBall.position.y + aimingCue.getCueDirection().y);
+            fakeWhiteBall.position = newPos;
+            
+            for (Edge edge : edges) {
+                if (checkForEdgeCollision(edge, fakeWhiteBall, false)) {
+                    predictionPoint = fakeWhiteBall.position; 
+                    collision = true;
+                }
+            }
+        }   
+    }
+
 
     //Getters and Setters
 

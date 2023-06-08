@@ -168,6 +168,10 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         g2.drawPolygon(cueVertices);
 
 
+        //Draw Shot Prediction 
+        g2.setColor(Color.RED);
+        g2.fillArc(playArea.x + (int) poolGame.predictionPoint.x, (int) poolGame.predictionPoint.y, 12, 12, 0, 360);
+
         //---------Paint Program Compartments-----------
 
         //Play area border
@@ -262,6 +266,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             if(poolGame.aimingCue.selected) {
                 poolGame.aimingCue.mousePos = new Vector2D(xGameClick, yGameClick);
                 poolGame.aimingCue.aimCue();
+                poolGame.updateShotPrediction();
             }
 
         
