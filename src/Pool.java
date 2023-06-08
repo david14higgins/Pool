@@ -161,16 +161,6 @@ public class Pool {
         Vector2D end = cushionEndCoords[0];
         Edge edge = new Edge(start.x, start.y, end.x, end.y, edgeRadius);
         edges.add(edge);
- 
-        // for (CushionsInfo.Cushion cushion: CushionsInfo.Cushion.values()) {
-        //     Vector2D[] coords = info.getCushionCoords(cushion);
-        //     for (int k = 0; k < coords.length - 1; k++) {
-        //         Vector2D start = coords[k];
-        //         Vector2D end = coords[k+1];
-        //         Edge edge = new Edge(start.x, start.y, end.x, end.y, edgeRadius);
-        //         edges.add(edge);
-        //     }
-        // }
     }
 
 
