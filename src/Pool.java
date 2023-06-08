@@ -140,22 +140,37 @@ public class Pool {
 
         //Create Cushions
         int edgeRadius = 6;
- 
+        
         //Retrieve two pockets for information purposes
         Pocket ul = pockets.get(Pocket.Position.UpperLeft);
         Pocket um = pockets.get(Pocket.Position.UpperMiddle);
  
         CushionsInfo info = new CushionsInfo(ul.radius, um.radius, edgeRadius, gameWidth, gameHeight);
- 
-        for (CushionsInfo.Cushion cushion: CushionsInfo.Cushion.values()) {
-            Vector2D[] coords = info.getCushionCoords(cushion);
-            for (int k = 0; k < coords.length - 1; k++) {
-                Vector2D start = coords[k];
-                Vector2D end = coords[k+1];
-                Edge edge = new Edge(start.x, start.y, end.x, end.y, edgeRadius);
-                edges.add(edge);
-            }
+
+        Vector2D cushionEndCoords[] = info.getCushionCoords();
+
+        for (int i = 0; i < cushionEndCoords.length - 1; i++) {
+            Vector2D start = cushionEndCoords[i];
+            Vector2D end = cushionEndCoords[i+1];
+            Edge edge = new Edge(start.x, start.y, end.x, end.y, edgeRadius);
+            edges.add(edge);
         }
+
+        //Add closing edge 
+        Vector2D start = cushionEndCoords[cushionEndCoords.length - 1];
+        Vector2D end = cushionEndCoords[0];
+        Edge edge = new Edge(start.x, start.y, end.x, end.y, edgeRadius);
+        edges.add(edge);
+ 
+        // for (CushionsInfo.Cushion cushion: CushionsInfo.Cushion.values()) {
+        //     Vector2D[] coords = info.getCushionCoords(cushion);
+        //     for (int k = 0; k < coords.length - 1; k++) {
+        //         Vector2D start = coords[k];
+        //         Vector2D end = coords[k+1];
+        //         Edge edge = new Edge(start.x, start.y, end.x, end.y, edgeRadius);
+        //         edges.add(edge);
+        //     }
+        // }
     }
 
 
