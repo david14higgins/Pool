@@ -27,7 +27,11 @@ public class Vector2D {
 
     public static Vector2D unitVector(Vector2D vec) {
         double magnitude = Vector2D.magnitude(vec);
-        return new Vector2D(vec.x / magnitude, vec.y / magnitude);
+        if (magnitude == 0) {
+            return vec; 
+        } else {
+            return new Vector2D(vec.x / magnitude, vec.y / magnitude);
+        }
     }
 
 

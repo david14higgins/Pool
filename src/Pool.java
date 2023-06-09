@@ -45,12 +45,7 @@ public class Pool {
 
     private final int maxShotPower = 2000;
 
-    public Ball predictBall = new Ball(12, new Vector2D(0, 0), null); 
-    public boolean willHitBall = false; 
-    public Vector2D whiteBallPredictionSource;
-    public Vector2D whiteBallPredictionDestination; 
-    public Vector2D targetBallPredictionSource; 
-    public Vector2D targetBallPredictionDestination;
+    public ShotPredictor shotPredictor; 
 
 
     public Pool(int width, int height) {
@@ -62,6 +57,7 @@ public class Pool {
         createAimingCue();
         createPockets();
         createCushions();
+        createShotPredictor();
         
         //Don't start game loop until balls and edges set up
         ready = true;
@@ -123,6 +119,11 @@ public class Pool {
         aimingCue = new AimingCue(300, 4);
         aimingCue.whiteBallPos = whiteBall.position;
         aimingCue.initializeCue();
+    }
+
+    private void createShotPredictor() {
+        shotPredictor = new ShotPredictor(); 
+        updateShotPrediction();
     }
 
     private void createPockets() {
@@ -189,6 +190,7 @@ public class Pool {
             }
         } else if(gameState == gameState.TAKING_SHOT) {
             aimingCue.repositionCue();
+            updateShotPrediction();
         }
     }
 
@@ -367,20 +369,26 @@ public class Pool {
             
             for (Edge edge : edges) {
                 if (checkForEdgeCollision(edge, fakeWhiteBall, false)) {
-                    predictBall.position = fakeWhiteBall.position; 
+                    //predictBall.position = fakeWhiteBall.position; 
                     collision = true;
-                    willHitBall = false;
+                    shotPredictor.hittingWall = false;
                 }
             }
 
             for (Ball ball : balls) {
                 if (ball.colour != Ball.BallColours.White) {
                     if(checkForBallsCollision(fakeWhiteBall, ball, false)) {
-                        predictBall.position = fakeWhiteBall.position; 
+                        //Simulate a collision between the fake white ball and its target and update shot predictor details
                         collision = true;
-                        willHitBall = true;
 
-                        //
+                        shotPredictor.wbSource = new Vector2D(whiteBall.position.x, whiteBall.position.y);
+                        shotPredictor.wbDestination = new Vector2D(fakeWhiteBall.position.x, fakeWhiteBall.position.y);
+                        shotPredictor.wbDirectionBefore = new Vector2D(aimingCue.getCueDirection().x, aimingCue.getCueDirection().y);
+                        shotPredictor.targetBall = new Vector2D(ball.position.x, ball.position.y);
+                        shotPredictor.hittingWall = true; 
+                        
+                        //Collision simulation
+                        //(We only care about the direction after the 'collision' so we can give a fake velocity magnitude)
                         fakeWhiteBall.velocity = new Vector2D(100 * aimingCue.getCueDirection().x, 100 * aimingCue.getCueDirection().y);
                         double totalMass = fakeWhiteBall.mass + ball.mass;
                         Vector2D x1_x2 = Vector2D.subtract(fakeWhiteBall.position, ball.position);
@@ -390,15 +398,10 @@ public class Pool {
                         double v1_scalar = 2*ball.mass / totalMass * Vector2D.dotProduct(v1_v2, x1_x2) / Math.pow(Vector2D.magnitude(x1_x2), 2);
                         double v2_scalar = 2*fakeWhiteBall.mass / totalMass * Vector2D.dotProduct(v2_v1, x2_x1) / Math.pow(Vector2D.magnitude(x2_x1), 2);
 
-                        Vector2D fakeWhiteBallDirection = Vector2D.unitVector(Vector2D.subtract(fakeWhiteBall.velocity, Vector2D.scalar(v1_scalar, x1_x2)));
-                        Vector2D ballDirection = Vector2D.unitVector(Vector2D.subtract(ball.velocity, Vector2D.scalar(v2_scalar, x2_x1)));
+                        shotPredictor.wbDirectionAfter = Vector2D.unitVector(Vector2D.subtract(fakeWhiteBall.velocity, Vector2D.scalar(v1_scalar, x1_x2)));
+                        shotPredictor.targetDirectionAfter = Vector2D.unitVector(Vector2D.subtract(ball.velocity, Vector2D.scalar(v2_scalar, x2_x1)));
 
-                        whiteBallPredictionSource = new Vector2D(fakeWhiteBall.position.x, fakeWhiteBall.position.y);
-                        whiteBallPredictionDestination = new Vector2D(fakeWhiteBall.position.x + fakeWhiteBallDirection.x * 20, fakeWhiteBall.position.y + fakeWhiteBallDirection.y * 20);
-
-                        targetBallPredictionSource = new Vector2D(ball.position.x, ball.position.y);
-                        targetBallPredictionDestination = new Vector2D(ball.position.x + ballDirection.x * 40, ball.position.y + ballDirection.y * 40);
-                        
+                        shotPredictor.calculatePredictorPoints();
                     }
                 }
             }

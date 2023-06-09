@@ -168,21 +168,26 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         g2.drawPolygon(cueVertices);
 
 
-        //Draw Shot Prediction 
-        g2.setColor(Color.PINK);
-        int predictionPaintXPos = (int) poolGame.predictBall.position.x - poolGame.predictBall.radius; 
-        int predictionPaintYPos = (int) poolGame.predictBall.position.y - poolGame.predictBall.radius; 
-        int diameter = poolGame.predictBall.radius * 2;
-        g2.drawArc(playArea.x + predictionPaintXPos, playArea.y + predictionPaintYPos, diameter, diameter, 0, 360);
-        int whitePaintXPos = (int) poolGame.whiteBall.position.x - poolGame.whiteBall.radius; 
-        int whitePaintYPos = (int) poolGame.whiteBall.position.y - poolGame.whiteBall.radius;
-        g2.drawLine(playArea.x + ((int) poolGame.predictBall.position.x), playArea.y + ((int) poolGame.predictBall.position.y), playArea.x + ((int) poolGame.whiteBall.position.x), playArea.y + ((int) poolGame.whiteBall.position.y));
+        if (poolGame.gameState == GameState.TAKING_SHOT) {
+            //Draw Shot Prediction 
+            g2.setColor(Color.white);
+            ShotPredictor sp = poolGame.shotPredictor;
+            //Line from white ball source to destination 
+            g2.drawLine(playArea.x + (int) sp.wbSource.x, playArea.y + (int) sp.wbSource.y, playArea.x + (int) sp.wbDestination.x, playArea.y + (int) sp.wbDestination.y);
+            //Draw white ball potential destination 
+            int wbDestinationPaintXPos = (int) sp.wbDestination.x - poolGame.whiteBall.radius; 
+            int wbDestinationPaintYPos = (int) sp.wbDestination.y - poolGame.whiteBall.radius; 
+            int diameter = poolGame.whiteBall.radius * 2;
+            g2.drawArc(playArea.x + wbDestinationPaintXPos, playArea.y + wbDestinationPaintYPos, diameter, diameter, 0, 360);
 
-        if(poolGame.willHitBall) {
-            g2.drawLine(playArea.x + ((int) poolGame.whiteBallPredictionSource.x), playArea.y + ((int) poolGame.whiteBallPredictionSource.y), playArea.x + ((int) poolGame.whiteBallPredictionDestination.x), playArea.y + ((int) poolGame.whiteBallPredictionDestination.y)); 
-            g2.drawLine(playArea.x + ((int) poolGame.targetBallPredictionSource.x), playArea.y + ((int) poolGame.targetBallPredictionSource.y), playArea.x + ((int) poolGame.targetBallPredictionDestination.x), playArea.y + ((int) poolGame.targetBallPredictionDestination.y));
+            if(sp.hittingWall) {
+                //Draw white ball prediction after collision 
+                g2.drawLine(playArea.x + (int) sp.wbDestination.x, playArea.y + (int) sp.wbDestination.y, playArea.x + (int) sp.wbAfterEndPoint.x, playArea.y + (int) sp.wbAfterEndPoint.y);
+                //Draw target ball prediction after collision 
+                g2.drawLine(playArea.x + (int) sp.targetBall.x, playArea.y + (int) sp.targetBall.y, playArea.x + (int) sp.targetAfterEndPoint.x, playArea.y + (int) sp.targetAfterEndPoint.y);  
+            }
         }
-
+        
         //---------Paint Program Compartments-----------
 
         //Play area border
