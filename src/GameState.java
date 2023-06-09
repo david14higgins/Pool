@@ -1,4 +1,5 @@
 public enum GameState {
     BALLS_MOVING,
-    TAKING_SHOT
+    TAKING_SHOT, 
+    PREPARE_TO_TAKE_SHOT
 }

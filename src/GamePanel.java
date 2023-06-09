@@ -180,7 +180,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             int diameter = poolGame.whiteBall.radius * 2;
             g2.drawArc(playArea.x + wbDestinationPaintXPos, playArea.y + wbDestinationPaintYPos, diameter, diameter, 0, 360);
 
-            if(sp.hittingWall) {
+            if(sp.hittingBall) {
                 //Draw white ball prediction after collision 
                 g2.drawLine(playArea.x + (int) sp.wbDestination.x, playArea.y + (int) sp.wbDestination.y, playArea.x + (int) sp.wbAfterEndPoint.x, playArea.y + (int) sp.wbAfterEndPoint.y);
                 //Draw target ball prediction after collision 

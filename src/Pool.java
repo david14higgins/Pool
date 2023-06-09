@@ -188,9 +188,10 @@ public class Pool {
                 //Check balls have stopped moving
                 checkBallsStationary();
             }
-        } else if(gameState == gameState.TAKING_SHOT) {
+        } else if(gameState == gameState.PREPARE_TO_TAKE_SHOT) {
             aimingCue.repositionCue();
             updateShotPrediction();
+            gameState = gameState.TAKING_SHOT;
         }
     }
 
@@ -293,7 +294,7 @@ public class Pool {
             }
         }
         if(allStationary) { 
-            gameState = GameState.TAKING_SHOT;
+            gameState = GameState.PREPARE_TO_TAKE_SHOT;
         }
     }
 
@@ -369,9 +370,12 @@ public class Pool {
             
             for (Edge edge : edges) {
                 if (checkForEdgeCollision(edge, fakeWhiteBall, false)) {
-                    //predictBall.position = fakeWhiteBall.position; 
+                    //Update shot predictor details 
                     collision = true;
-                    shotPredictor.hittingWall = false;
+
+                    shotPredictor.hittingBall = false;
+                    shotPredictor.wbSource = new Vector2D(whiteBall.position.x, whiteBall.position.y);
+                    shotPredictor.wbDestination = new Vector2D(fakeWhiteBall.position.x, fakeWhiteBall.position.y);
                 }
             }
 
@@ -381,11 +385,12 @@ public class Pool {
                         //Simulate a collision between the fake white ball and its target and update shot predictor details
                         collision = true;
 
+                        shotPredictor.hittingBall = true; 
                         shotPredictor.wbSource = new Vector2D(whiteBall.position.x, whiteBall.position.y);
                         shotPredictor.wbDestination = new Vector2D(fakeWhiteBall.position.x, fakeWhiteBall.position.y);
                         shotPredictor.wbDirectionBefore = new Vector2D(aimingCue.getCueDirection().x, aimingCue.getCueDirection().y);
                         shotPredictor.targetBall = new Vector2D(ball.position.x, ball.position.y);
-                        shotPredictor.hittingWall = true; 
+                        
                         
                         //Collision simulation
                         //(We only care about the direction after the 'collision' so we can give a fake velocity magnitude)

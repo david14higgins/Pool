@@ -7,7 +7,7 @@ public class ShotPredictor {
     public Vector2D wbDestination; 
     public Vector2D wbDirectionBefore;
     public Vector2D wbDirectionAfter;
-    public boolean hittingWall; 
+    public boolean hittingBall; 
     public Vector2D targetBall; 
     public Vector2D targetDirectionAfter; 
 
@@ -24,7 +24,7 @@ public class ShotPredictor {
     public void calculatePredictorPoints() {
         wbAfterEndPoint = new Vector2D(wbDestination.x + whiteBallPredictorLength * wbDirectionAfter.x, 
             wbDestination.y + whiteBallPredictorLength * wbDirectionAfter.y);
-        if(hittingWall) {
+        if(hittingBall) {
             targetAfterEndPoint = new Vector2D(targetBall.x + targetBallPredictorLength * targetDirectionAfter.x, 
                 targetBall.y + targetBallPredictorLength * targetDirectionAfter.y);
         }
