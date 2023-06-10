@@ -192,6 +192,8 @@ public class Pool {
             aimingCue.repositionCue();
             updateShotPrediction();
             gameState = gameState.TAKING_SHOT;
+        } else if(gameState == gameState.TAKING_SHOT) {
+            aimingCue.repositionCue();
         }
     }
 
