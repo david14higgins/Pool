@@ -47,6 +47,8 @@ public class Pool {
 
     public ShotPredictor shotPredictor; 
 
+    private ArrayList<Ball> ballsToRemove; 
+
 
     public Pool(int width, int height) {
         this.gameWidth = width;
@@ -58,6 +60,10 @@ public class Pool {
         createPockets();
         createCushions();
         createShotPredictor();
+
+        //Instantiate arraylists 
+        collidingPairs = new ArrayList<>();
+        ballsToRemove = new ArrayList<>();
         
         //Don't start game loop until balls and edges set up
         ready = true;
@@ -133,6 +139,7 @@ public class Pool {
         pockets = new HashMap<>();
         Pocket.Position[] positions = Pocket.Position.values();
         for (Pocket.Position position : positions) {
+            //Centre pockets have a smaller radius
             if (position == Pocket.Position.UpperMiddle || position == Pocket.Position.BottomMiddle) {
                 Pocket pocket = new Pocket(position, middleRadius, gameWidth, gameHeight);
                 pockets.put(position, pocket);
@@ -171,8 +178,7 @@ public class Pool {
     public void update() {
     
         if (gameState == gameState.BALLS_MOVING) {
-            //Reset on every update
-            collidingPairs = new ArrayList<>();
+            
 
             for (int n = 0; n < GamePanel.nSimulationUpdates; n++) {
                 //Move the balls
@@ -185,9 +191,18 @@ public class Pool {
                 handleDynamicCollisions();
                 //Clear colliding balls
                 collidingPairs.clear();
+                //Finds any balls that have been pockets 
+                checkAndHandleBallsPocketed(); 
+                //Remove balls outside of iterator (avoid concurrent modification exception)
+                removeBalls();
+                //Clear arraylist that tracks which balls to remove
+                ballsToRemove.clear();
                 //Check balls have stopped moving
                 checkBallsStationary();
             }
+
+            
+
         } else if(gameState == gameState.PREPARE_TO_TAKE_SHOT) {
             aimingCue.repositionCue();
             updateShotPrediction();
@@ -302,7 +317,6 @@ public class Pool {
 
     private boolean checkForBallsCollision(Ball ball1, Ball ball2, boolean handle) {
         //Handle declares if we want to handle the collision or just detect it
-
         Ball[] ballsPair = new Ball[] {ball1, ball2};
         if(Math.pow(ball1.position.x - ball2.position.x, 2) + Math.pow(ball1.position.y - ball2.position.y, 2) <= Math.pow(ball1.radius + ball2.radius,2)) {
             if (handle) {
@@ -348,6 +362,34 @@ public class Pool {
             ball2.velocity = Vector2D.subtract(ball2.velocity, Vector2D.scalar(v2_scalar, x2_x1));
         }
     }
+
+    //Checks and handles balls which have been pocketed
+    private void checkAndHandleBallsPocketed() {
+        //Iterate balls and pockets
+        for (Ball ball : balls) {
+            for (Pocket pocket : pockets.values()) {
+                if(pocket.hasPocketed(ball)) {
+                    /*If the ball has been pocketed, we change its velocity so heads towards the centre of the pocket 
+                    and we reduce its size. It will stay "pocketed" and give the illusion of falling. When it's size 
+                    is nothing, we can begin the process of removing it from the game*/
+                    Vector2D newVel = new Vector2D(pocket.getPositionVec().x - ball.position.x, pocket.getPositionVec().y - ball.position.y);
+                    ball.velocity = newVel;
+                    ball.radius = ball.radius - 1;
+                    if(ball.radius <= 0) {
+                        ballsToRemove.add(ball);
+                    }
+                }
+            }
+        }
+    }
+
+    private void removeBalls() {
+        for (Ball ball : ballsToRemove) {
+            balls.remove(ball);
+        }
+    }
+
+
     //Should this be public?
     public boolean ballClicked(Ball ball, double mouseX, double mouseY) {
         return Math.sqrt(Math.pow(ball.position.x - mouseX, 2) + Math.pow(ball.position.y - mouseY, 2)) <= ball.radius;

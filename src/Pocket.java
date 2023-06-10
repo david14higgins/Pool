@@ -24,6 +24,11 @@ public class Pocket {
         }
     }
 
+    public boolean hasPocketed(Ball ball) {
+        //Using pythagoras but both sides squared for computational speed 
+        return Math.pow((positionVec.x - ball.position.x),2) + Math.pow((positionVec.y - ball.position.y), 2) <= Math.pow(radius, 2); 
+    }
+
     public Vector2D getPositionVec() {
         return positionVec;
     }

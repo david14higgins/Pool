@@ -140,8 +140,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             //g2.drawLine(playArea.x + (int) edge.getStart().x, playArea.y + (int) edge.getStart().y, playArea.x + (int) edge.getEnd().x, playArea.y + (int) edge.getEnd().y);
             g2.drawLine(playArea.x + (int) edge.getStartNormalOne().x, playArea.y + (int) edge.getStartNormalOne().y, playArea.x + (int) edge.getEndNormalOne().x, playArea.y + (int) edge.getEndNormalOne().y);
             g2.drawLine(playArea.x + (int) edge.getStartNormalTwo().x, playArea.y + (int) edge.getStartNormalTwo().y, playArea.x + (int) edge.getEndNormalTwo().x, playArea.y + (int) edge.getEndNormalTwo().y);
-
-
         }
 
 
