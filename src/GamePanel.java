@@ -91,9 +91,17 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
         g2.setColor(Color.black);
 
+        //---------Paint Pockets
+        g2.setColor(Color.green);
+        for (Pocket.Position position: poolGame.pockets.keySet()) {
+            Pocket pocket = poolGame.pockets.get(position);
+            int paintPointX = (int) pocket.getPositionVec().x - pocket.radius;
+            int paintPointY = (int) pocket.getPositionVec().y - pocket.radius;
+            int diameter = pocket.radius * 2;
+            g2.fillArc(playArea.x + paintPointX, playArea.y + paintPointY, diameter, diameter, 0, 360);
+        }
+
         //---------Paint Balls-----------
-
-
         for (Ball ball : poolGame.balls) {
             int paintXPos = (int) ball.position.x - ball.radius;
             int paintYPos = (int) ball.position.y - ball.radius;
@@ -136,15 +144,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
         }
 
-        //---------Paint Pockets
-        g2.setColor(Color.green);
-        for (Pocket.Position position: poolGame.pockets.keySet()) {
-            Pocket pocket = poolGame.pockets.get(position);
-            int paintPointX = (int) pocket.getPositionVec().x - pocket.radius;
-            int paintPointY = (int) pocket.getPositionVec().y - pocket.radius;
-            int diameter = pocket.radius * 2;
-            g2.fillArc(playArea.x + paintPointX, playArea.y + paintPointY, diameter, diameter, 0, 360);
-        }
 
         //Draw Aiming Cue
         g2.setColor(Color.black);
