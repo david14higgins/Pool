@@ -321,18 +321,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             int xGameClick = e.getX() - playArea.x;
             int yGameClick = e.getY() - playArea.y;
 
-            //For ball movement - will need restricting 
-            for (Ball b : poolGame.balls) {
-                if(b.selected) {
-                    b.position.x = xGameClick;
-                    b.position.y = yGameClick;
-                    if (b.equals(poolGame.whiteBall)) {
-                        poolGame.aimingCue.whiteBallPos = b.position;
-                        poolGame.aimingCue.repositionCue();
-                    } 
-                }
-            }
-
             if(poolGame.whiteBall.selected) {
                 poolGame.dragWhiteBall(xGameClick, yGameClick); 
             }

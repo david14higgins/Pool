@@ -478,7 +478,42 @@ public class Pool {
 
     //Updates white ball position with given position if move is legal (doesn't cause collision)
     public void dragWhiteBall(int newXPos, int newYPos) {
-        
+        //Save original position if new position is invalid
+        double originalX = whiteBall.position.x; 
+        double originalY = whiteBall.position.y; 
+
+        //Try new position 
+        whiteBall.position = new Vector2D(newXPos, newYPos);
+    
+        //Check collision with balls 
+        for (Ball ball : balls) {
+            if (ball.colour != Ball.BallColours.White) {
+                if(checkForBallsCollision(whiteBall, ball, false)) {
+                    //Restore to original position 
+                    whiteBall.position = new Vector2D(originalX, originalY);
+                }
+            }
+        }
+
+        //Check collision with edges 
+        for (Edge edge : edges) {
+            if(checkForEdgeCollision(edge, whiteBall, false)) {
+                //Restore to original position 
+                whiteBall.position = new Vector2D(originalX, originalY);
+            }
+        }
+
+        //Check not in pockets
+        for (Pocket pocket : pockets.values()) {
+            if (pocket.hasPocketed(whiteBall)) {
+                //Restore to original position 
+                whiteBall.position = new Vector2D(originalX, originalY);
+            }
+        }
+
+        aimingCue.whiteBallPos = whiteBall.position;
+        aimingCue.repositionCue();
+        updateShotPrediction();
     }
 
 
