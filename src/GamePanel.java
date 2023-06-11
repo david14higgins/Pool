@@ -15,6 +15,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
     private ArrayList<Compartment> compartments;
     private Compartment playArea;
     private Compartment powerArea; 
+    private Compartment yellowPocketedArea; 
+    private Compartment redPocketedArea; 
 
     public static final int FPS = 60;
     public static final double ElapsedTime = 0.017; //60FPS = 16.7 milliseconds between each frame
@@ -184,6 +186,20 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 g2.drawLine(playArea.x + (int) sp.targetBall.x, playArea.y + (int) sp.targetBall.y, playArea.x + (int) sp.targetAfterEndPoint.x, playArea.y + (int) sp.targetAfterEndPoint.y);  
             }
         }
+
+        //Drawing pocketed balls counters 
+        g2.setColor(Color.RED);
+        int offset = 35; 
+        g2.fillArc(redPocketedArea.x + 10 + offset, redPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.fillArc(redPocketedArea.x + 35 + offset, redPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.fillArc(redPocketedArea.x + 60 + offset, redPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.fillArc(redPocketedArea.x + 85 + offset, redPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.fillArc(redPocketedArea.x + 110 + offset, redPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.fillArc(redPocketedArea.x + 135 + offset, redPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.fillArc(redPocketedArea.x + 160 + offset, redPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.setColor(Color.BLACK);
+        g2.fillArc(redPocketedArea.x + 185 + offset, redPocketedArea.y + 10, 20, 20, 0, 360);
+
         
         //---------Paint Program Compartments-----------
 
@@ -281,19 +297,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 poolGame.aimingCue.aimCue();
                 poolGame.updateShotPrediction();
             }
-
-        
-            /* --------- For moving edges (disabled) ---------- 
-            for (Edge ed : poolGame.edges) {
-                if(ed.startSelected) {
-                    Vector2D newStart = new Vector2D(xGameClick, yGameClick);
-                    ed.setStart(newStart);
-                } else if (ed.endSelected) {
-                    Vector2D newEnd = new Vector2D(xGameClick, yGameClick);
-                    ed.setEnd(newEnd);
-                }
-            }
-            */
         }
 
         if(powerArea.containsMouse(e.getX(), e.getY())) {
@@ -373,10 +376,10 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         powerArea = new Compartment(10, 10, 40, 540);
         compartments.add(powerArea);
 
-        Compartment redPocketedArea = new Compartment(10, 565, 275, 40);
+        redPocketedArea = new Compartment(10, 565, 275, 40);
         compartments.add(redPocketedArea);
 
-        Compartment yellowPocketedArea = new Compartment(870, 565, 275, 40);
+        yellowPocketedArea = new Compartment(870, 565, 275, 40);
         compartments.add(yellowPocketedArea);
 
         Compartment messageArea = new Compartment(300, 565, 555, 40);

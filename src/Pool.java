@@ -49,6 +49,9 @@ public class Pool {
 
     private ArrayList<Ball> ballsToRemove; 
 
+    public int numYellowBallsPocketed = 0; 
+    public int numRedBallsPocketed = 0; 
+
 
     public Pool(int width, int height) {
         this.gameWidth = width;
