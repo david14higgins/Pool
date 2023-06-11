@@ -1,6 +1,7 @@
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.awt.Polygon;
 
 
 public class Pool {
@@ -52,6 +53,8 @@ public class Pool {
     public int numYellowBallsPocketed = 0; 
     public int numRedBallsPocketed = 0; 
     public boolean blackPocketed = false;
+
+    private CushionsInfo cushionsInfo; 
 
 
     public Pool(int width, int height) {
@@ -164,9 +167,9 @@ public class Pool {
         Pocket ul = pockets.get(Pocket.Position.UpperLeft);
         Pocket um = pockets.get(Pocket.Position.UpperMiddle);
  
-        CushionsInfo info = new CushionsInfo(ul.radius, um.radius, edgeRadius, gameWidth, gameHeight);
+        cushionsInfo = new CushionsInfo(ul.radius, um.radius, edgeRadius, gameWidth, gameHeight);
 
-        Vector2D cushionEndCoords[] = info.getCushionCoords();
+        Vector2D cushionEndCoords[] = cushionsInfo.getCushionCoords();
 
         //first and last element of above array is the same so straightforward loop can be used 
         for (int i = 0; i < cushionEndCoords.length - 1; i++) {
@@ -512,8 +515,20 @@ public class Pool {
         }
 
         //Check not inside cushions
-        
+        for (Polygon cushionArea : cushionsInfo.getCushionPolygons()) {
+            if (cushionArea.contains(whiteBall.position.x, whiteBall.position.y)) {
+                //Restore to original position 
+                whiteBall.position = new Vector2D(originalX, originalY);
+            }
+        }
 
+        //Check inside playing area
+        if (!(whiteBall.position.x >= 10 && whiteBall.position.x <= gameWidth - 10 && whiteBall.position.y >= 10 && whiteBall.position.y <= gameHeight - 10)) {
+            //Restore to original position 
+            whiteBall.position = new Vector2D(originalX, originalY);
+        }
+
+        //Update aiming cue and shot predictor after white ball drag 
         aimingCue.whiteBallPos = whiteBall.position;
         aimingCue.repositionCue();
         updateShotPrediction();
