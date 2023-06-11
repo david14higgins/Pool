@@ -333,6 +333,10 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 }
             }
 
+            if(poolGame.whiteBall.selected) {
+                poolGame.dragWhiteBall(xGameClick, yGameClick); 
+            }
+
             //Aiming cue movement 
             if(poolGame.aimingCue.selected) {
                 poolGame.aimingCue.mousePos = new Vector2D(xGameClick, yGameClick);

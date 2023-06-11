@@ -476,6 +476,11 @@ public class Pool {
         
     }
 
+    //Updates white ball position with given position if move is legal (doesn't cause collision)
+    public void dragWhiteBall(int newXPos, int newYPos) {
+        
+    }
+
 
     //Getters and Setters
 
