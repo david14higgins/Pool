@@ -47,10 +47,11 @@ public class Pool {
 
     public ShotPredictor shotPredictor; 
 
-    private ArrayList<Ball> ballsToRemove; 
+    private ArrayList<Ball> ballsToProcess; 
 
     public int numYellowBallsPocketed = 0; 
     public int numRedBallsPocketed = 0; 
+    public boolean blackPocketed = false;
 
 
     public Pool(int width, int height) {
@@ -66,7 +67,7 @@ public class Pool {
 
         //Instantiate arraylists 
         collidingPairs = new ArrayList<>();
-        ballsToRemove = new ArrayList<>();
+        ballsToProcess = new ArrayList<>();
         
         //Don't start game loop until balls and edges set up
         ready = true;
@@ -195,11 +196,11 @@ public class Pool {
                 //Clear colliding balls
                 collidingPairs.clear();
                 //Finds any balls that have been pockets 
-                checkAndHandleBallsPocketed(); 
-                //Remove balls outside of iterator (avoid concurrent modification exception)
-                removeBalls();
-                //Clear arraylist that tracks which balls to remove
-                ballsToRemove.clear();
+                checkPocketed(); 
+                //Processes all pocketed balls (depending on colour and game state)
+                processPocketedBalls();
+                //Clear arraylist that tracks which balls to process
+                ballsToProcess.clear();
                 //Check balls have stopped moving
                 checkBallsStationary();
             }
@@ -367,7 +368,7 @@ public class Pool {
     }
 
     //Checks and handles balls which have been pocketed
-    private void checkAndHandleBallsPocketed() {
+    private void checkPocketed() {
         //Iterate balls and pockets
         for (Ball ball : balls) {
             for (Pocket pocket : pockets.values()) {
@@ -379,16 +380,27 @@ public class Pool {
                     ball.velocity = newVel;
                     ball.radius = ball.radius - 1;
                     if(ball.radius <= 0) {
-                        ballsToRemove.add(ball);
+                        ballsToProcess.add(ball);
                     }
                 }
             }
         }
     }
 
-    private void removeBalls() {
-        for (Ball ball : ballsToRemove) {
-            balls.remove(ball);
+    //Process pocketed ball depending on colour
+    private void processPocketedBalls() {
+        //Needs updating for black and white ball processing!
+
+        //Remove balls from the game 
+        for (Ball ball : ballsToProcess) {
+            if(ball.colour == Ball.BallColours.Red) {
+                numRedBallsPocketed += 1;
+                balls.remove(ball);
+            } else if (ball.colour == Ball.BallColours.Yellow) {
+                numRedBallsPocketed += 1;
+                balls.remove(ball);
+            }
+            
         }
     }
 

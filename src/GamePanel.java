@@ -190,37 +190,59 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         
 
         //Drawing pocketed balls counters 
-        //Adjust opacity  
-        AlphaComposite alphaComposite1 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
-        g2.setComposite(alphaComposite1);
+        AlphaComposite alphaCompositeFilled = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f);
+        AlphaComposite alphaCompositeTransparent = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
 
-        //Reds
+        //Reds 
+        //Pocketed
         g2.setColor(Color.RED);
-        g2.fillArc(redPocketedArea.x + 10, redPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.fillArc(redPocketedArea.x + 35, redPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.fillArc(redPocketedArea.x + 60, redPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.fillArc(redPocketedArea.x + 85, redPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.fillArc(redPocketedArea.x + 110, redPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.fillArc(redPocketedArea.x + 135, redPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.fillArc(redPocketedArea.x + 160, redPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.setComposite(alphaCompositeFilled);
+        int redBallX = 10;
+        for (int i = 0; i < poolGame.numRedBallsPocketed; i++) {
+            g2.fillArc(redPocketedArea.x + redBallX, redPocketedArea.y + 10, 20, 20, 0, 360);
+            redBallX += 25;
+        }
+        //Unpocketed
+        g2.setComposite(alphaCompositeTransparent);
+        for (int i = poolGame.numRedBallsPocketed; i < 7; i++) {
+            g2.fillArc(redPocketedArea.x + redBallX, redPocketedArea.y + 10, 20, 20, 0, 360);
+            redBallX += 25;
+        }
+        //Black ball
         g2.setColor(Color.BLACK);
-        g2.fillArc(redPocketedArea.x + 185, redPocketedArea.y + 10, 20, 20, 0, 360);
+        if(poolGame.blackPocketed) {
+            g2.setComposite(alphaCompositeFilled);
+        } else {
+            g2.setComposite(alphaCompositeTransparent);
+        }
+        g2.fillArc(redPocketedArea.x + redBallX, redPocketedArea.y + 10, 20, 20, 0, 360);
 
-
+        //Yellows
+        //Pocketed
         g2.setColor(Color.YELLOW);
-        g2.fillArc(yellowPocketedArea.x + 10, yellowPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.fillArc(yellowPocketedArea.x + 35, yellowPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.fillArc(yellowPocketedArea.x + 60, yellowPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.fillArc(yellowPocketedArea.x + 85, yellowPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.fillArc(yellowPocketedArea.x + 110, yellowPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.fillArc(yellowPocketedArea.x + 135, yellowPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.fillArc(yellowPocketedArea.x + 160, yellowPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.setComposite(alphaCompositeFilled);
+        int yellowBallX = 10;
+        for (int i = 0; i < poolGame.numYellowBallsPocketed; i++) {
+            g2.fillArc(yellowPocketedArea.x + yellowBallX, yellowPocketedArea.y + 10, 20, 20, 0, 360);
+            yellowBallX += 25;
+        }
+        //Unpocketed
+        g2.setComposite(alphaCompositeTransparent);
+        for (int i = poolGame.numYellowBallsPocketed; i < 7; i++) {
+            g2.fillArc(yellowPocketedArea.x + yellowBallX, yellowPocketedArea.y + 10, 20, 20, 0, 360);
+            yellowBallX += 25;
+        }
+        //Black ball
         g2.setColor(Color.BLACK);
-        g2.fillArc(yellowPocketedArea.x + 185, yellowPocketedArea.y + 10, 20, 20, 0, 360);
+        if(poolGame.blackPocketed) {
+            g2.setComposite(alphaCompositeFilled);
+        } else {
+            g2.setComposite(alphaCompositeTransparent);
+        }
+        g2.fillArc(yellowPocketedArea.x + yellowBallX, yellowPocketedArea.y + 10, 20, 20, 0, 360);
 
         //Restore opacity 
-        AlphaComposite alphaComposite2 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f);
-        g2.setComposite(alphaComposite2);
+        g2.setComposite(alphaCompositeFilled);
         //---------Paint Program Compartments-----------
 
         //Play area border
