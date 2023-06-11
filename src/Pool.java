@@ -511,6 +511,9 @@ public class Pool {
             }
         }
 
+        //Check not inside cushions
+        
+
         aimingCue.whiteBallPos = whiteBall.position;
         aimingCue.repositionCue();
         updateShotPrediction();

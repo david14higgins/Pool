@@ -1,9 +1,18 @@
+import java.awt.Polygon;
+
 public class CushionsInfo {
     private final int cornerPocketRadius;
     private final int middlePocketRadius;
     private final int edgeRadius;
     private final int gameWidth;
     private final int gameHeight;
+
+    private Polygon polyTopLeft;
+    private Polygon polyTopRight;
+    private Polygon polyRightSide; 
+    private Polygon polyBottomRight; 
+    private Polygon polyBottomLeft; 
+    private Polygon polyLeftSide;
 
     //distance from corner pocket to corner edge
     private int dist1;
@@ -25,6 +34,7 @@ public class CushionsInfo {
         this.gameHeight = gameHeight;
         calculateKeyValues();
         calculateCushionCoords();
+        assignCushionPolygons();
     }
 
     private void calculateKeyValues() {
@@ -90,6 +100,43 @@ public class CushionsInfo {
     public Vector2D[] getCushionCoords() {
         return cushionCoords;
     }
+
+    private void assignCushionPolygons() {
+        //Top Left 
+        int[] xPoints = new int[] {(int) cushionCoords[1].x, (int) cushionCoords[2].x, (int) cushionCoords[3].x, (int) cushionCoords[4].x, (int) cushionCoords[1].x};
+        int[] yPoints = new int[] {(int) cushionCoords[1].y, (int) cushionCoords[2].y, (int) cushionCoords[3].y, (int) cushionCoords[4].y, (int) cushionCoords[1].y};
+        polyTopLeft = new Polygon(xPoints, yPoints, 5);
+
+        //Top Right 
+        xPoints = new int[] {(int) cushionCoords[5].x, (int) cushionCoords[6].x, (int) cushionCoords[7].x, (int) cushionCoords[8].x, (int) cushionCoords[5].x};
+        yPoints = new int[] {(int) cushionCoords[5].y, (int) cushionCoords[6].y, (int) cushionCoords[7].y, (int) cushionCoords[8].y, (int) cushionCoords[5].y};
+        polyTopRight = new Polygon(xPoints, yPoints, 5);
+
+        //Right Side
+        xPoints = new int[] {(int) cushionCoords[10].x, (int) cushionCoords[11].x, (int) cushionCoords[12].x, (int) cushionCoords[13].x, (int) cushionCoords[10].x};
+        yPoints = new int[] {(int) cushionCoords[10].y, (int) cushionCoords[11].y, (int) cushionCoords[12].y, (int) cushionCoords[13].y, (int) cushionCoords[10].y};
+        polyRightSide = new Polygon(xPoints, yPoints, 5);
+
+        //Bottom Right
+        xPoints = new int[] {(int) cushionCoords[15].x, (int) cushionCoords[16].x, (int) cushionCoords[17].x, (int) cushionCoords[18].x, (int) cushionCoords[15].x};
+        yPoints = new int[] {(int) cushionCoords[15].y, (int) cushionCoords[16].y, (int) cushionCoords[17].y, (int) cushionCoords[18].y, (int) cushionCoords[15].y};
+        polyBottomRight = new Polygon(xPoints, yPoints, 5);
+
+        //Bottom Left 
+        xPoints = new int[] {(int) cushionCoords[19].x, (int) cushionCoords[20].x, (int) cushionCoords[21].x, (int) cushionCoords[22].x, (int) cushionCoords[19].x};
+        yPoints = new int[] {(int) cushionCoords[19].y, (int) cushionCoords[20].y, (int) cushionCoords[21].y, (int) cushionCoords[22].y, (int) cushionCoords[19].y};
+        polyBottomLeft = new Polygon(xPoints, yPoints, 5);
+
+        //Left Side  
+        xPoints = new int[] {(int) cushionCoords[24].x, (int) cushionCoords[25].x, (int) cushionCoords[26].x, (int) cushionCoords[27].x, (int) cushionCoords[24].x};
+        yPoints = new int[] {(int) cushionCoords[24].y, (int) cushionCoords[25].y, (int) cushionCoords[26].y, (int) cushionCoords[27].y, (int) cushionCoords[24].y};
+        polyLeftSide = new Polygon(xPoints, yPoints, 5);
+    }
+    
+    public Polygon[] getCushionPolygons() {
+        return new Polygon[] {polyTopLeft, polyTopRight, polyRightSide, polyBottomRight, polyBottomLeft, polyLeftSide};
+    }
+
 
     public enum Cushion{
         UpperLeft,
