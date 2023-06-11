@@ -4,11 +4,11 @@ public class Ball {
     public Vector2D acceleration = new Vector2D(0, 0);
     public boolean selected = false;
     public double mass;
-    public int radius;
+    public double radius;
     public BallColours colour; 
 
-    
-    public Ball(int radius, Vector2D position,  BallColours colour) {
+
+    public Ball(double radius, Vector2D position,  BallColours colour) {
         this.radius = radius;
         this.mass = 10 * radius;
         this.colour = colour;

@@ -54,7 +54,7 @@ public class Pool {
     public int numRedBallsPocketed = 0; 
     public boolean blackPocketed = false;
 
-    private CushionsInfo cushionsInfo; 
+    public CushionsInfo cushionsInfo; 
 
 
     public Pool(int width, int height) {
@@ -379,9 +379,9 @@ public class Pool {
                     /*If the ball has been pocketed, we change its velocity so heads towards the centre of the pocket 
                     and we reduce its size. It will stay "pocketed" and give the illusion of falling. When it's size 
                     is nothing, we can begin the process of removing it from the game*/
-                    Vector2D newVel = new Vector2D(pocket.getPositionVec().x - ball.position.x, pocket.getPositionVec().y - ball.position.y);
+                    Vector2D newVel = new Vector2D(10 * (pocket.getPositionVec().x - ball.position.x), 10 * (pocket.getPositionVec().y - ball.position.y));
                     ball.velocity = newVel;
-                    ball.radius = ball.radius - 1;
+                    ball.radius = ball.radius - 0.2;
                     if(ball.radius <= 0) {
                         ballsToProcess.add(ball);
                     }

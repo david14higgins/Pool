@@ -5,6 +5,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.AreaAveragingScaleFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class GamePanel extends JPanel implements Runnable, MouseListener, MouseMotionListener {
@@ -93,9 +94,53 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
         g2.setColor(Color.black);
 
+    
+
+        //---------Paint Edges-----------
+        for (Edge edge : poolGame.edges) {
+            g2.setColor(new Color(109, 103, 110));
+            int paintPosStartX = (int) edge.getStart().x - edge.radius;
+            int paintPosStartY = (int) edge.getStart().y - edge.radius;
+            int paintPosEndX = (int) edge.getEnd().x - edge.radius;
+            int paintPosEndY = (int) edge.getEnd().y - edge.radius;
+            int diameter = edge.radius * 2;
+
+            g2.fillArc(playArea.x + paintPosStartX, playArea.y + paintPosStartY, diameter, diameter, 0, 360 );
+            g2.fillArc(playArea.x + paintPosEndX, playArea.y + paintPosEndY, diameter, diameter, 0, 360 );
+
+            //g2.drawLine(playArea.x + (int) edge.getStart().x, playArea.y + (int) edge.getStart().y, playArea.x + (int) edge.getEnd().x, playArea.y + (int) edge.getEnd().y);
+            g2.drawLine(playArea.x + (int) edge.getStartNormalOne().x, playArea.y + (int) edge.getStartNormalOne().y, playArea.x + (int) edge.getEndNormalOne().x, playArea.y + (int) edge.getEndNormalOne().y);
+            g2.drawLine(playArea.x + (int) edge.getStartNormalTwo().x, playArea.y + (int) edge.getStartNormalTwo().y, playArea.x + (int) edge.getEndNormalTwo().x, playArea.y + (int) edge.getEndNormalTwo().y);
+            Point p1 = new Point(playArea.x + (int) edge.getStartNormalOne().x, playArea.y + (int) edge.getStartNormalOne().y);
+            Point p2 = new Point(playArea.x + (int) edge.getEndNormalOne().x, playArea.y + (int) edge.getEndNormalOne().y);
+            Point p3 = new Point(playArea.x + (int) edge.getEndNormalTwo().x, playArea.y + (int) edge.getEndNormalTwo().y);
+            Point p4 = new Point(playArea.x + (int) edge.getStartNormalTwo().x, playArea.y + (int) edge.getStartNormalTwo().y);
+            Polygon edgeFill = new Polygon(new int[] {p1.x, p2.x, p3.x, p4.x, p1.x}, new int[] {p1.y, p2.y, p3.y, p4.y, p1.y}, 5);
+            g2.fillPolygon(edgeFill);
+
+            for (Polygon cushionArea : poolGame.cushionsInfo.getCushionPolygons()) {
+                //Create deep copy of polygon
+                Polygon newPoly = new Polygon(cushionArea.xpoints, cushionArea.ypoints, cushionArea.npoints);
+                for (int i = 0; i < cushionArea.npoints; i++) {
+                    newPoly.xpoints[i] += playArea.x; 
+                    newPoly.ypoints[i] += playArea.y; 
+                    
+                }
+                g2.fillPolygon(newPoly);
+            }
+
+            //Fill background gaps
+            g2.setColor(new Color(251, 255, 254));
+            g2.fillRect(playArea.x, playArea.y, playArea.width, 10);
+            g2.fillRect(playArea.x, playArea.y + playArea.height - 10, playArea.width, 10);
+            g2.fillRect(playArea.x, playArea.y, 10, playArea.height);
+            g2.fillRect(playArea.x + playArea.width - 10, playArea.y, 10, playArea.height);
+        }
+
         //---------Paint Pockets
-        g2.setColor(Color.green);
+        
         for (Pocket.Position position: poolGame.pockets.keySet()) {
+            g2.setColor(Color.darkGray);
             Pocket pocket = poolGame.pockets.get(position);
             int paintPointX = (int) pocket.getPositionVec().x - pocket.radius;
             int paintPointY = (int) pocket.getPositionVec().y - pocket.radius;
@@ -103,11 +148,11 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             g2.fillArc(playArea.x + paintPointX, playArea.y + paintPointY, diameter, diameter, 0, 360);
         }
 
-        //---------Paint Balls-----------
+         //---------Paint Balls-----------
         for (Ball ball : poolGame.balls) {
-            int paintXPos = (int) ball.position.x - ball.radius;
-            int paintYPos = (int) ball.position.y - ball.radius;
-            int diameter = ball.radius*2;
+            int paintXPos = (int) (ball.position.x - ball.radius);
+            int paintYPos = (int) (ball.position.y - ball.radius);
+            int diameter = (int) ball.radius*2;
 
             switch (ball.colour) {
                 case White:
@@ -125,23 +170,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             }
 
             g2.fillArc(playArea.x + paintXPos,playArea.y + paintYPos, diameter, diameter, 0, 360);
-        }
-
-        //---------Paint Edges-----------
-        for (Edge edge : poolGame.edges) {
-            g2.setColor(Color.BLACK);
-            int paintPosStartX = (int) edge.getStart().x - edge.radius;
-            int paintPosStartY = (int) edge.getStart().y - edge.radius;
-            int paintPosEndX = (int) edge.getEnd().x - edge.radius;
-            int paintPosEndY = (int) edge.getEnd().y - edge.radius;
-            int diameter = edge.radius * 2;
-
-            g2.drawArc(playArea.x + paintPosStartX, playArea.y + paintPosStartY, diameter, diameter, 0, 360 );
-            g2.drawArc(playArea.x + paintPosEndX, playArea.y + paintPosEndY, diameter, diameter, 0, 360 );
-
-            //g2.drawLine(playArea.x + (int) edge.getStart().x, playArea.y + (int) edge.getStart().y, playArea.x + (int) edge.getEnd().x, playArea.y + (int) edge.getEnd().y);
-            g2.drawLine(playArea.x + (int) edge.getStartNormalOne().x, playArea.y + (int) edge.getStartNormalOne().y, playArea.x + (int) edge.getEndNormalOne().x, playArea.y + (int) edge.getEndNormalOne().y);
-            g2.drawLine(playArea.x + (int) edge.getStartNormalTwo().x, playArea.y + (int) edge.getStartNormalTwo().y, playArea.x + (int) edge.getEndNormalTwo().x, playArea.y + (int) edge.getEndNormalTwo().y);
         }
 
 
@@ -174,9 +202,9 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             //Line from white ball source to destination 
             g2.drawLine(playArea.x + (int) sp.wbSource.x, playArea.y + (int) sp.wbSource.y, playArea.x + (int) sp.wbDestination.x, playArea.y + (int) sp.wbDestination.y);
             //Draw white ball potential destination 
-            int wbDestinationPaintXPos = (int) sp.wbDestination.x - poolGame.whiteBall.radius; 
-            int wbDestinationPaintYPos = (int) sp.wbDestination.y - poolGame.whiteBall.radius; 
-            int diameter = poolGame.whiteBall.radius * 2;
+            int wbDestinationPaintXPos = (int) (sp.wbDestination.x - poolGame.whiteBall.radius); 
+            int wbDestinationPaintYPos = (int) (sp.wbDestination.y - poolGame.whiteBall.radius); 
+            int diameter = (int) poolGame.whiteBall.radius * 2;
             g2.drawArc(playArea.x + wbDestinationPaintXPos, playArea.y + wbDestinationPaintYPos, diameter, diameter, 0, 360);
 
             if(sp.hittingBall) {
