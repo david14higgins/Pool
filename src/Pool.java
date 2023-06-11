@@ -397,7 +397,10 @@ public class Pool {
                 numRedBallsPocketed += 1;
                 balls.remove(ball);
             } else if (ball.colour == Ball.BallColours.Yellow) {
-                numRedBallsPocketed += 1;
+                numYellowBallsPocketed += 1;
+                balls.remove(ball);
+            } else if(ball.colour == Ball.BallColours.Black) {
+                blackPocketed = true; 
                 balls.remove(ball);
             }
             
