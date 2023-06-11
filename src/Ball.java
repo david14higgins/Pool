@@ -5,23 +5,14 @@ public class Ball {
     public boolean selected = false;
     public double mass;
     public int radius;
-    public BallColours colour; //0=White, 1=Black, 2=Red, 3=Yellow
+    public BallColours colour; 
 
-
-
-
+    
     public Ball(int radius, Vector2D position,  BallColours colour) {
         this.radius = radius;
         this.mass = 10 * radius;
         this.colour = colour;
         this.position = position; 
-    }
-
-
-    //Temp test function - gives balls random velocity
-    public void hit(double power) {
-        velocity.x = -power/2 + Math.random() * power;
-        velocity.y = -power/2 + Math.random() * power;
     }
 
     public boolean isStationary() {
