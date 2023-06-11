@@ -187,20 +187,40 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             }
         }
 
-        //Drawing pocketed balls counters 
-        g2.setColor(Color.RED);
-        int offset = 35; 
-        g2.fillArc(redPocketedArea.x + 10 + offset, redPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.fillArc(redPocketedArea.x + 35 + offset, redPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.fillArc(redPocketedArea.x + 60 + offset, redPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.fillArc(redPocketedArea.x + 85 + offset, redPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.fillArc(redPocketedArea.x + 110 + offset, redPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.fillArc(redPocketedArea.x + 135 + offset, redPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.fillArc(redPocketedArea.x + 160 + offset, redPocketedArea.y + 10, 20, 20, 0, 360);
-        g2.setColor(Color.BLACK);
-        g2.fillArc(redPocketedArea.x + 185 + offset, redPocketedArea.y + 10, 20, 20, 0, 360);
-
         
+
+        //Drawing pocketed balls counters 
+        //Adjust opacity  
+        AlphaComposite alphaComposite1 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
+        g2.setComposite(alphaComposite1);
+
+        //Reds
+        g2.setColor(Color.RED);
+        g2.fillArc(redPocketedArea.x + 10, redPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.fillArc(redPocketedArea.x + 35, redPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.fillArc(redPocketedArea.x + 60, redPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.fillArc(redPocketedArea.x + 85, redPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.fillArc(redPocketedArea.x + 110, redPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.fillArc(redPocketedArea.x + 135, redPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.fillArc(redPocketedArea.x + 160, redPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.setColor(Color.BLACK);
+        g2.fillArc(redPocketedArea.x + 185, redPocketedArea.y + 10, 20, 20, 0, 360);
+
+
+        g2.setColor(Color.YELLOW);
+        g2.fillArc(yellowPocketedArea.x + 10, yellowPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.fillArc(yellowPocketedArea.x + 35, yellowPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.fillArc(yellowPocketedArea.x + 60, yellowPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.fillArc(yellowPocketedArea.x + 85, yellowPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.fillArc(yellowPocketedArea.x + 110, yellowPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.fillArc(yellowPocketedArea.x + 135, yellowPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.fillArc(yellowPocketedArea.x + 160, yellowPocketedArea.y + 10, 20, 20, 0, 360);
+        g2.setColor(Color.BLACK);
+        g2.fillArc(yellowPocketedArea.x + 185, yellowPocketedArea.y + 10, 20, 20, 0, 360);
+
+        //Restore opacity 
+        AlphaComposite alphaComposite2 = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f);
+        g2.setComposite(alphaComposite2);
         //---------Paint Program Compartments-----------
 
         //Play area border
@@ -376,13 +396,13 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         powerArea = new Compartment(10, 10, 40, 540);
         compartments.add(powerArea);
 
-        redPocketedArea = new Compartment(10, 565, 275, 40);
+        redPocketedArea = new Compartment(10, 565, 215, 40);
         compartments.add(redPocketedArea);
 
-        yellowPocketedArea = new Compartment(870, 565, 275, 40);
+        yellowPocketedArea = new Compartment(930, 565, 215, 40);
         compartments.add(yellowPocketedArea);
 
-        Compartment messageArea = new Compartment(300, 565, 555, 40);
+        Compartment messageArea = new Compartment(240, 565, 675, 40);
         compartments.add(messageArea);
     }
 
