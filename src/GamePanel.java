@@ -279,7 +279,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         Font outputFont; 
         try {
             outputFont = Font.createFont(Font.TRUETYPE_FONT, new File("Fonts/Inconsolata-VariableFont_wdth,wght.ttf"));
-            outputFont = outputFont.deriveFont(Font.PLAIN, 30);
+            outputFont = outputFont.deriveFont(Font.BOLD, 24);
             // Register the font with the graphics environment
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             ge.registerFont(outputFont);
@@ -289,7 +289,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         }
 
 
-        String message = "Testing testing";
+        String message = "Player two's turn (red). You may drag white ball.";
 
         g2.setFont(outputFont);
         g2.setColor(Color.white);

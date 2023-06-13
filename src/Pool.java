@@ -56,8 +56,14 @@ public class Pool {
 
     public CushionsInfo cushionsInfo; 
 
-    
+    private boolean broken = false; 
+    private boolean decided = false; 
+    private boolean playerOneRed; 
+    private boolean playerOneTurn; 
 
+    private Ball firstBallHit; 
+
+    private String outputMessage; 
 
     public Pool(int width, int height) {
         this.gameWidth = width;
@@ -209,9 +215,6 @@ public class Pool {
                 //Check balls have stopped moving
                 checkBallsStationary();
             }
-
-            
-
         } else if(gameState == gameState.PREPARE_TO_TAKE_SHOT) {
             aimingCue.repositionCue();
             updateShotPrediction();
