@@ -275,8 +275,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         g2.setComposite(alphaCompositeFilled);
 
 
-        Font outputFont; 
         //Text Output 
+        Font outputFont; 
         try {
             outputFont = Font.createFont(Font.TRUETYPE_FONT, new File("Fonts/Inconsolata-VariableFont_wdth,wght.ttf"));
             outputFont = outputFont.deriveFont(Font.PLAIN, 30);
@@ -286,19 +286,27 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         } catch (Exception e) {
             outputFont = new Font("Arial", Font.BOLD, 12); 
             e.printStackTrace();
-
         }
 
-        String message = "Test";
+
+        String message = "YAYYYYY IT WORKSSSS";
+
         g2.setFont(outputFont);
+        g2.setColor(Color.white);
 
+        //Calculate where message should be drawn 
+        FontMetrics fontMetrics = g2.getFontMetrics();
 
-        int stringWidth = g.getFontMetrics().stringWidth(message);
-        int stringHeight = g.getFontMetrics().getHeight();
+        int stringWidth = fontMetrics.stringWidth(message);
+        int stringHeight = fontMetrics.getHeight();
 
+        int ascent = fontMetrics.getAscent();
+        int descent = fontMetrics.getDescent();
+
+        int messageXPos = messageArea.x + (messageArea.width / 2) - (stringWidth / 2);
+        int messageYPos = messageArea.y + ((messageArea.height  - ascent + descent) / 2) + (stringHeight / 2); 
         
-
-        g2.drawString("Test", messageArea.x + messageArea.width / 2, messageArea.y + 20);
+        g2.drawString(message, messageXPos, messageYPos);
 
         //---------Paint Program Compartments-----------
         //Play area border
