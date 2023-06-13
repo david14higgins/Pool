@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.AreaAveragingScaleFilter;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -18,6 +19,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
     private Compartment powerArea; 
     private Compartment yellowPocketedArea; 
     private Compartment redPocketedArea; 
+    private Compartment messageArea;
 
     public static final int FPS = 60;
     public static final double ElapsedTime = 0.017; //60FPS = 16.7 milliseconds between each frame
@@ -273,9 +275,30 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         g2.setComposite(alphaCompositeFilled);
 
 
-
+        Font outputFont; 
         //Text Output 
-        //g2.setFont(new Font(""));
+        try {
+            outputFont = Font.createFont(Font.TRUETYPE_FONT, new File("Fonts/Inconsolata-VariableFont_wdth,wght.ttf"));
+            outputFont = outputFont.deriveFont(Font.PLAIN, 30);
+            // Register the font with the graphics environment
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(outputFont);
+        } catch (Exception e) {
+            outputFont = new Font("Arial", Font.BOLD, 12); 
+            e.printStackTrace();
+
+        }
+
+        String message = "Test";
+        g2.setFont(outputFont);
+
+
+        int stringWidth = g.getFontMetrics().stringWidth(message);
+        int stringHeight = g.getFontMetrics().getHeight();
+
+        
+
+        g2.drawString("Test", messageArea.x + messageArea.width / 2, messageArea.y + 20);
 
         //---------Paint Program Compartments-----------
         //Play area border
@@ -449,7 +472,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         yellowPocketedArea = new Compartment(930, 565, 215, 40);
         compartments.add(yellowPocketedArea);
 
-        Compartment messageArea = new Compartment(240, 565, 675, 40);
+        messageArea = new Compartment(240, 565, 675, 40);
         compartments.add(messageArea);
     }
 
