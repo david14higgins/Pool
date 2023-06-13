@@ -318,7 +318,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             g2.fillRect(c.x - 5, c.y + c.height, c.width + 10, 5);
         }
 
-
         g2.dispose();
     }
 
