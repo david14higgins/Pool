@@ -289,7 +289,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         }
 
 
-        String message = "YAYYYYY IT WORKSSSS";
+        String message = "Testing testing";
 
         g2.setFont(outputFont);
         g2.setColor(Color.white);
