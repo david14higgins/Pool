@@ -94,9 +94,21 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
         Graphics2D g2 = (Graphics2D) g;
 
-        g2.setColor(Color.black);
+        //Drawing pocketed balls counters 
+        AlphaComposite alphaCompositeFilled = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f);
+        AlphaComposite alphaCompositeTransparent = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
 
-    
+        //Paint play area background 
+        g2.setColor(Color.lightGray);
+        g2.setComposite(alphaCompositeTransparent);
+        g2.drawLine(playArea.x + playArea.width * 3 / 4, playArea.y, playArea.x + playArea.width * 3 / 4, playArea.y + playArea.height);
+        g2.setColor(Color.green);
+        if(!poolGame.broken && poolGame.whiteBallBeingDragged) {
+            g2.fillRect(playArea.x + playArea.width * 3 / 4, playArea.y, playArea.width / 4, playArea.height);
+        } else if (poolGame.broken && poolGame.whiteBallBeingDragged) {
+            g2.fillRect(playArea.x, playArea.y, playArea.width, playArea.height);
+        }
+        g2.setComposite(alphaCompositeFilled);
 
         //---------Paint Edges-----------
         for (Edge edge : poolGame.edges) {
@@ -216,12 +228,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 g2.drawLine(playArea.x + (int) sp.targetBall.x, playArea.y + (int) sp.targetBall.y, playArea.x + (int) sp.targetAfterEndPoint.x, playArea.y + (int) sp.targetAfterEndPoint.y);  
             }
         }
-
-        
-
-        //Drawing pocketed balls counters 
-        AlphaComposite alphaCompositeFilled = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f);
-        AlphaComposite alphaCompositeTransparent = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
 
         //Reds 
         //Pocketed
@@ -376,7 +382,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         }
     }
 
-    //Will need adjusting for just white ball dragging
     @Override
     public void mouseDragged(MouseEvent e) {
         if (playArea.containsMouse(e.getX(), e.getY())) {
@@ -386,6 +391,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
             if(poolGame.whiteBall.selected) {
                 poolGame.dragWhiteBall(xGameClick, yGameClick); 
+                poolGame.whiteBallBeingDragged = true; 
             }
 
             //Aiming cue movement 
@@ -418,14 +424,10 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             int xGameClick = e.getX() - playArea.x;
             int yGameClick = e.getY() - playArea.y;
     
-            //LEFT CLICK - Static Collisions
             if(e.getButton() == MouseEvent.BUTTON1) {
                 //Deselect Ball (needs updating for white ball only)
-                for (Ball b : poolGame.balls) {
-                    if (b.selected) {
-                        b.selected = false;
-                    }
-                }
+                poolGame.whiteBall.selected = false; 
+                poolGame.whiteBallBeingDragged = false;
     
                 //Deselect aiming cue
                 poolGame.aimingCue.selected = false;
@@ -448,7 +450,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 }
             }
 
-            //
+            //Reset aiming cue's distance from white ball for the next shot
             poolGame.aimingCue.dragDistance = 0;
         }
 

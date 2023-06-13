@@ -56,14 +56,16 @@ public class Pool {
 
     public CushionsInfo cushionsInfo; 
 
-    private boolean broken = false; 
-    private boolean decided = false; 
-    private boolean playerOneRed; 
-    private boolean playerOneTurn; 
+    public boolean broken; 
+    public boolean decided; 
+    public boolean playerOneRed; 
+    public boolean playerOneTurn; 
+    public boolean mayDragWhiteBall; 
+    public boolean whiteBallBeingDragged;
 
     private Ball firstBallHit; 
 
-    private String outputMessage; 
+    public String outputMessage; 
 
     public Pool(int width, int height) {
         this.gameWidth = width;
@@ -79,9 +81,26 @@ public class Pool {
         //Instantiate arraylists 
         collidingPairs = new ArrayList<>();
         ballsToProcess = new ArrayList<>();
+
+        initalizeGameSettings(); 
         
-        //Don't start game loop until balls and edges set up
+        //Don't start game loop until game is prepared
         ready = true;
+    }
+
+    private void initalizeGameSettings() {
+        //Balls haven't been broken yet
+        broken = false; 
+        //Colours haven't been decided yet
+        decided = false; 
+        //Player one starts
+        playerOneTurn = true; 
+        //May move white ball before break 
+        mayDragWhiteBall = true;
+        //White ball not dragged yet 
+        whiteBallBeingDragged = false;
+        //Output message 
+        outputMessage = "Player One to break. You may move the white ball";
     }
 
     private void createBalls() {
@@ -193,8 +212,6 @@ public class Pool {
     public void update() {
     
         if (gameState == gameState.BALLS_MOVING) {
-            
-
             for (int n = 0; n < GamePanel.nSimulationUpdates; n++) {
                 //Move the balls
                 moveBalls();
@@ -531,6 +548,14 @@ public class Pool {
         if (!(whiteBall.position.x >= 10 && whiteBall.position.x <= gameWidth - 10 && whiteBall.position.y >= 10 && whiteBall.position.y <= gameHeight - 10)) {
             //Restore to original position 
             whiteBall.position = new Vector2D(originalX, originalY);
+        }
+
+        //Check if in restricted quarter during break 
+        if(!broken) {
+            if (!(whiteBall.position.x >= 3 * gameWidth / 4 && whiteBall.position.x <= gameWidth - 10 && whiteBall.position.y >= 10 && whiteBall.position.y <= gameHeight - 10)) {
+            //Restore to original position 
+            whiteBall.position = new Vector2D(originalX, originalY);
+        }
         }
 
         //Update aiming cue and shot predictor after white ball drag 
