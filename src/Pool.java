@@ -56,6 +56,8 @@ public class Pool {
 
     public CushionsInfo cushionsInfo; 
 
+    
+
 
     public Pool(int width, int height) {
         this.gameWidth = width;
