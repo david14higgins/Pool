@@ -271,8 +271,13 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
         //Restore opacity 
         g2.setComposite(alphaCompositeFilled);
-        //---------Paint Program Compartments-----------
 
+
+
+        //Text Output 
+        //g2.setFont(new Font(""));
+
+        //---------Paint Program Compartments-----------
         //Play area border
         g2.setColor(Color.white);
         for (Compartment c : compartments) {
