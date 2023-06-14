@@ -355,11 +355,11 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 }
 
                 //TEMP 
-                //for (Ball b : poolGame.balls) {
-                //    if (poolGame.ballClicked(b, xGameClick, yGameClick)) {
-                //        b.selected = true; 
-                //    }
-                //}
+                for (Ball b : poolGame.balls) {
+                    if (poolGame.ballClicked(b, xGameClick, yGameClick)) {
+                        b.selected = true; 
+                    }
+                }
 
                 //Check if power cue is selected
                 poolGame.aimingCue.checkClicked(xGameClick, yGameClick);
@@ -409,9 +409,9 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             }
 
             //TEMP 
-            //for (Ball b : poolGame.balls) {
-            //    if(b.selected) {b.position = new Vector2D(xGameClick, yGameClick);}
-            //}
+            for (Ball b : poolGame.balls) {
+                if(b.selected) {b.position = new Vector2D(xGameClick, yGameClick);}
+            }
         }
 
         if(powerArea.containsMouse(e.getX(), e.getY())) {
@@ -446,9 +446,9 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
 
                 //TEMP 
-                //for (Ball b : poolGame.balls) {
-                //    b.selected = false; 
-                //}
+                for (Ball b : poolGame.balls) {
+                    b.selected = false; 
+                }
             }
         }
 
