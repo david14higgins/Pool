@@ -295,7 +295,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         }
 
 
-        String message = "Player two's turn (red). You may drag white ball.";
+        String message = poolGame.outputMessage;
 
         g2.setFont(outputFont);
         g2.setColor(Color.white);
