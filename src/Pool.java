@@ -1,6 +1,9 @@
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+
+
 import java.awt.Polygon;
 
 
@@ -114,6 +117,13 @@ public class Pool {
         gameOver = false; 
         //Starting output message 
         outputMessage = "Player One to break. You may move the white ball";
+
+
+        //TEMP 
+        decided = true; 
+        broken = true; 
+        playerOneRed = false;
+        playerOneTurn = false;
     }
 
     private void createBalls() {
@@ -248,6 +258,8 @@ public class Pool {
         } else if(gameState == gameState.PREPARE_TO_TAKE_SHOT) {
             aimingCue.repositionCue();
             updateShotPrediction();
+            firstBallHitBall = null; 
+            firstBallHitBool = false; 
             gameState = gameState.TAKING_SHOT;
         } else if(gameState == gameState.TAKING_SHOT) {
             aimingCue.repositionCue();
@@ -464,8 +476,9 @@ public class Pool {
     private void processShot() { 
         boolean processed = false; 
         processed = earlyBlackBallPocketed();        
-        if(!processed) {processed = earlyBlackBallPocketed();}
-        
+        if(!processed) {processed = blackBallNotPocketedAlone();}
+        if(!processed) {processed = blackBallPocketedIndirectly();}
+        if(!processed) {processed = blackBallPocketedCorrectly();}
 
         pocketedBallsToProcess.clear();
         gameState = GameState.PREPARE_TO_TAKE_SHOT; 
@@ -513,6 +526,45 @@ public class Pool {
                     return true; 
                 }
             } 
+        }
+        return false; 
+    }
+
+    //The black ball was pocketed at the correct time, however, not through a direct shot 
+    private boolean blackBallPocketedIndirectly() {
+        if (pocketedBallsToProcess.size() == 1) {
+            if (pocketedBallsToProcess.get(0).colour == Ball.BallColours.Black) {
+                if (firstBallHitBool) {
+                    if (firstBallHitBall.colour != Ball.BallColours.Black) {
+                        if(playerOneTurn) {
+                            outputMessage = "Black ball pocketed indirectly. Player two wins!";
+                        } else {
+                            outputMessage = "Black ball pocketed indirectly. Player one wins!";
+                        }
+                        gameOver = true; 
+                        return true; 
+                    }
+                }
+            }
+        }
+        return false; 
+    }
+
+    private boolean blackBallPocketedCorrectly() {
+        if (pocketedBallsToProcess.size() == 1) {
+            if (pocketedBallsToProcess.get(0).colour == Ball.BallColours.Black) {
+                if (decided) {
+                    if (playerOneTurn && ((playerOneRed && numRedBallsPocketed == 7) || (!playerOneRed && numYellowBallsPocketed == 7))) {
+                        outputMessage = "Player one wins!";
+                        gameOver = true; 
+                        return true;
+                    } else if (!playerOneTurn && ((!playerOneRed && numRedBallsPocketed == 7) || (playerOneRed && numYellowBallsPocketed == 7))) {
+                        outputMessage = "Player two wins!";
+                        gameOver = true; 
+                        return true; 
+                    }
+                } 
+            }
         }
         return false; 
     }
