@@ -120,10 +120,8 @@ public class Pool {
 
 
         //TEMP 
-        decided = true; 
-        broken = true; 
-        playerOneRed = false;
-        playerOneTurn = false;
+        playerOneRed = true;
+        playerOneTurn = true;
     }
 
     private void createBalls() {
@@ -476,9 +474,12 @@ public class Pool {
     private void processShot() { 
         boolean processed = false; 
         processed = earlyBlackBallPocketed();        
+        //The above scenario is the only one that concerns itself with the broken boolean
+        if(!broken) {broken = true;}
         if(!processed) {processed = blackBallNotPocketedAlone();}
         if(!processed) {processed = blackBallPocketedIndirectly();}
         if(!processed) {processed = blackBallPocketedCorrectly();}
+        if(!processed) {processed = noBallsHit();}
 
         pocketedBallsToProcess.clear();
         gameState = GameState.PREPARE_TO_TAKE_SHOT; 
@@ -568,6 +569,40 @@ public class Pool {
         }
         return false; 
     }
+
+    //A foul shot where no balls were hit and opponent may move white ball anywhere 
+    private boolean noBallsHit() {
+        if (firstBallHitBool == false) {
+            //Simply swap player turns and allow white ball to be moved anywhere
+            if(playerOneTurn) {
+                outputMessage = "No balls hit, player two you may move the white ball";
+                playerOneTurn = false; 
+            } else {
+                outputMessage = "No balls hit, player one you may move the white ball";
+                playerOneTurn = true;
+            }
+            mayDragWhiteBall = true; 
+            return true; 
+        }
+        return false; 
+    }
+
+    // //A breaking shot where no balls are pocketed 
+    // private boolean unpocketedShot() {
+    //     if (!broken && pocketedBallsToProcess.size() == 0) {
+    //         broken = true; 
+    //         if (playerOneTurn) {
+    //             playerOneTurn = false;
+    //             outputMessage = "Player two's turn";
+    //             return true; 
+    //         } else {
+    //             playerOneTurn = true; 
+    //             outputMessage = "Player one's turn"; 
+    //             return true; 
+    //         }
+    //     }
+    //     return false; 
+    // }
 
     //Should this be public?
     public boolean ballClicked(Ball ball, double mouseX, double mouseY) {
