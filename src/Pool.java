@@ -62,8 +62,9 @@ public class Pool {
     public boolean playerOneTurn; 
     public boolean mayDragWhiteBall; 
     public boolean whiteBallBeingDragged;
+    public boolean firstBallHitBool; 
 
-    private Ball firstBallHit; 
+    private Ball firstBallHitBall; 
 
     public String outputMessage; 
 
@@ -99,6 +100,8 @@ public class Pool {
         mayDragWhiteBall = true;
         //White ball not dragged yet 
         whiteBallBeingDragged = false;
+        //A ball has not been hit first yet 
+        firstBallHitBool = false; 
         //Output message 
         outputMessage = "Player One to break. You may move the white ball";
     }
@@ -281,9 +284,20 @@ public class Pool {
             //Check for collisions between different balls
             for(int j = i + 1; j < balls.size(); j++) {
                 if(i != j) {
-                    checkForBallsCollision(balls.get(i), balls.get(j), true);
+                    Ball ball1 = balls.get(i); 
+                    Ball ball2 = balls.get(j); 
+                    boolean collision = checkForBallsCollision(ball1, ball2, true);
+                    //Assign first ball hit information (for processing the shot later)
+                    if(collision && !firstBallHitBool) {
+                        if(ball1.colour == Ball.BallColours.White) {
+                            firstBallHitBall = ball2; 
+                            firstBallHitBool = true; 
+                        } else if (ball2.colour == Ball.BallColours.White) {
+                            firstBallHitBall = ball1; 
+                            firstBallHitBool = true; 
+                        }
+                    }
                 }
-
             }
         }
     }
