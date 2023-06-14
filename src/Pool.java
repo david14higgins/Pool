@@ -463,7 +463,8 @@ public class Pool {
 
     private void processShot() { 
         boolean processed = false; 
-        processed = earlyBlackBallPocketed();
+        processed = earlyBlackBallPocketed();        
+        if(!processed) {processed = earlyBlackBallPocketed();}
         
 
         pocketedBallsToProcess.clear();
@@ -495,6 +496,24 @@ public class Pool {
             }
         }
         //None of the above scenarios have occured 
+        return false; 
+    }
+
+    //Potting the black ball along with any other ball in a shot is considered a foul that loses the game 
+    private boolean blackBallNotPocketedAlone() {
+        for(Ball ball : pocketedBallsToProcess) {
+            if (ball.colour == Ball.BallColours.Black) {
+                if (pocketedBallsToProcess.size() >= 2) {
+                    if(playerOneTurn) {
+                        outputMessage = "Black ball not pocketed alone. Player two wins!";
+                    } else {
+                        outputMessage = "Black ball not pocketed alone. Player one wins!";
+                    }
+                    gameOver = true; 
+                    return true; 
+                }
+            } 
+        }
         return false; 
     }
 

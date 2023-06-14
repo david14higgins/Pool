@@ -400,6 +400,11 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 poolGame.aimingCue.aimCue();
                 poolGame.updateShotPrediction();
             }
+
+            //TEMP 
+            for (Ball b : poolGame.balls) {
+                if(b.selected) {b.position = new Vector2D(xGameClick, yGameClick);}
+            }
         }
 
         if(powerArea.containsMouse(e.getX(), e.getY())) {
@@ -431,6 +436,12 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
     
                 //Deselect aiming cue
                 poolGame.aimingCue.selected = false;
+
+
+                //TEMP 
+                for (Ball b : poolGame.balls) {
+                    b.selected = false; 
+                }
             }
         }
 
