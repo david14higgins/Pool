@@ -48,7 +48,9 @@ public class Pool {
 
     public ShotPredictor shotPredictor; 
 
-    private ArrayList<Ball> ballsToProcess; 
+    //Pocketed balls must be removed from the game instantly, but processed at the end of the shot, hence the separate data structures 
+    private ArrayList<Ball> ballsToRemove; 
+    private ArrayList<Ball> pocketedBallsToProcess; 
 
     public CushionsInfo cushionsInfo; 
 
@@ -82,7 +84,8 @@ public class Pool {
 
         //Instantiate arraylists 
         collidingPairs = new ArrayList<>();
-        ballsToProcess = new ArrayList<>();
+        ballsToRemove = new ArrayList<>();
+        pocketedBallsToProcess = new ArrayList<>(); 
 
         initalizeGameSettings(); 
         
@@ -233,9 +236,9 @@ public class Pool {
                 //Finds any balls that have been pockets 
                 checkPocketed(); 
                 //Processes all pocketed balls (depending on colour and game state)
-                processPocketedBalls();
+                removePocketedBalls();
                 //Clear arraylist that tracks which balls to process
-                ballsToProcess.clear();
+                ballsToRemove.clear();
                 //Check balls have stopped moving
                 checkBallsStationary();
             }
@@ -245,6 +248,8 @@ public class Pool {
             gameState = gameState.TAKING_SHOT;
         } else if(gameState == gameState.TAKING_SHOT) {
             aimingCue.repositionCue();
+        } else if (gameState == gameState.PROCESSING_SHOT) {
+            processShot();
         }
     }
 
@@ -358,7 +363,7 @@ public class Pool {
             }
         }
         if(allStationary) { 
-            gameState = GameState.PREPARE_TO_TAKE_SHOT;
+            gameState = GameState.PROCESSING_SHOT;
         }
     }
 
@@ -423,19 +428,18 @@ public class Pool {
                     ball.velocity = newVel;
                     ball.radius = ball.radius - 0.2;
                     if(ball.radius <= 0) {
-                        ballsToProcess.add(ball);
+                        ballsToRemove.add(ball);
+                        pocketedBallsToProcess.add(ball); 
                     }
                 }
             }
         }
     }
 
-    //Process pocketed ball depending on colour
-    private void processPocketedBalls() {
-        //Needs updating for black and white ball processing!
-
+    //Removes pocketed balls and updates settings for the pocketed balls counters
+    private void removePocketedBalls() {
         //Remove balls from the game 
-        for (Ball ball : ballsToProcess) {
+        for (Ball ball : ballsToRemove) {
             if(ball.colour == Ball.BallColours.Red) {
                 numRedBallsPocketed += 1;
                 balls.remove(ball);
@@ -443,7 +447,6 @@ public class Pool {
                 numYellowBallsPocketed += 1;
                 balls.remove(ball);
             } else if(ball.colour == Ball.BallColours.Black) {
-                //NEEDS MOVING TO PROCESSING SHOT 
                 if(playerOneTurn) {
                     blackPocketedByP1 = true; 
                 } else {
@@ -453,6 +456,16 @@ public class Pool {
             }
             
         }
+    }
+
+    private void processShot() {
+
+        for(Ball ball : pocketedBallsToProcess) {
+            System.out.println(ball.colour);
+        }
+
+        pocketedBallsToProcess.clear();
+        gameState = GameState.PREPARE_TO_TAKE_SHOT; 
     }
 
 
