@@ -475,11 +475,16 @@ public class Pool {
         boolean processed = false; 
         processed = earlyBlackBallPocketed();        
         //The above scenario is the only one that concerns itself with the broken boolean
+
+        //These methods check for certain outcomes. Results of earlier checks becomes assumptions in later checks to reduce work 
+        //e.g. if checks after "noBallsHit()" are performed, this implies a ball has been hit and other checks do not need to worry about this
         if(!broken) {broken = true;}
         if(!processed) {processed = blackBallNotPocketedAlone();}
         if(!processed) {processed = blackBallPocketedIndirectly();}
         if(!processed) {processed = blackBallPocketedCorrectly();}
         if(!processed) {processed = noBallsHit();}
+        if(!processed) {processed = blackBallHitEarly();}
+        if(!processed) {processed = unpocketedShot();}
 
         pocketedBallsToProcess.clear();
         gameState = GameState.PREPARE_TO_TAKE_SHOT; 
@@ -575,10 +580,10 @@ public class Pool {
         if (firstBallHitBool == false) {
             //Simply swap player turns and allow white ball to be moved anywhere
             if(playerOneTurn) {
-                outputMessage = "No balls hit, player two you may move the white ball";
+                outputMessage = "No ball hit, player two you may move the white ball";
                 playerOneTurn = false; 
             } else {
-                outputMessage = "No balls hit, player one you may move the white ball";
+                outputMessage = "No ball hit, player one you may move the white bal";
                 playerOneTurn = true;
             }
             mayDragWhiteBall = true; 
@@ -587,22 +592,41 @@ public class Pool {
         return false; 
     }
 
-    // //A breaking shot where no balls are pocketed 
-    // private boolean unpocketedShot() {
-    //     if (!broken && pocketedBallsToProcess.size() == 0) {
-    //         broken = true; 
-    //         if (playerOneTurn) {
-    //             playerOneTurn = false;
-    //             outputMessage = "Player two's turn";
-    //             return true; 
-    //         } else {
-    //             playerOneTurn = true; 
-    //             outputMessage = "Player one's turn"; 
-    //             return true; 
-    //         }
-    //     }
-    //     return false; 
-    // }
+    //It is a foul shot if the black ball is hit whilst you still have coloured balls 
+    private boolean blackBallHitEarly() {
+        if(firstBallHitBall.colour == Ball.BallColours.Black) {
+            //Check player one 
+            if (playerOneTurn && ((playerOneRed && numRedBallsPocketed < 7) || (!playerOneRed && numYellowBallsPocketed < 7))) {
+                outputMessage = "Black ball hit, player two you may move the white ball"; 
+                playerOneTurn = false; 
+                mayDragWhiteBall = true; 
+                return true; 
+            } else if (!playerOneTurn && ((playerOneRed && numYellowBallsPocketed < 7) || (!playerOneRed && numRedBallsPocketed < 7))) {
+                outputMessage = "Black ball hit, player one you may move the white ball"; 
+                playerOneTurn = true; 
+                mayDragWhiteBall = true; 
+                return true; 
+            }
+        }
+        return false; 
+    }
+
+    //A shot where no balls are pocketed 
+    private boolean unpocketedShot() {
+        if (pocketedBallsToProcess.size() == 0) {
+            //Simply swap player turns and but do not allow white ball to be moved anywhere
+            if(playerOneTurn) {
+                outputMessage = "Player two's turn";
+                playerOneTurn = false; 
+            } else {
+                outputMessage = "Player one's turn";
+                playerOneTurn = true;
+            }
+            mayDragWhiteBall = false; 
+            return true; 
+        }
+        return false; 
+    }
 
     //Should this be public?
     public boolean ballClicked(Ball ball, double mouseX, double mouseY) {
@@ -674,65 +698,67 @@ public class Pool {
 
     //Updates white ball position with given position if move is legal (doesn't cause collision)
     public void dragWhiteBall(int newXPos, int newYPos) {
-        //Save original position if new position is invalid
-        double originalX = whiteBall.position.x; 
-        double originalY = whiteBall.position.y; 
+        if(mayDragWhiteBall) {
+            //Save original position if new position is invalid
+            double originalX = whiteBall.position.x; 
+            double originalY = whiteBall.position.y; 
 
-        //Try new position 
-        whiteBall.position = new Vector2D(newXPos, newYPos);
-    
-        //Check collision with balls 
-        for (Ball ball : balls) {
-            if (ball.colour != Ball.BallColours.White) {
-                if(checkForBallsCollision(whiteBall, ball, false)) {
+            //Try new position 
+            whiteBall.position = new Vector2D(newXPos, newYPos);
+        
+            //Check collision with balls 
+            for (Ball ball : balls) {
+                if (ball.colour != Ball.BallColours.White) {
+                    if(checkForBallsCollision(whiteBall, ball, false)) {
+                        //Restore to original position 
+                        whiteBall.position = new Vector2D(originalX, originalY);
+                    }
+                }
+            }
+
+            //Check collision with edges 
+            for (Edge edge : edges) {
+                if(checkForEdgeCollision(edge, whiteBall, false)) {
                     //Restore to original position 
                     whiteBall.position = new Vector2D(originalX, originalY);
                 }
             }
-        }
 
-        //Check collision with edges 
-        for (Edge edge : edges) {
-            if(checkForEdgeCollision(edge, whiteBall, false)) {
+            //Check not in pockets
+            for (Pocket pocket : pockets.values()) {
+                if (pocket.hasPocketed(whiteBall)) {
+                    //Restore to original position 
+                    whiteBall.position = new Vector2D(originalX, originalY);
+                }
+            }
+
+            //Check not inside cushions
+            for (Polygon cushionArea : cushionsInfo.getCushionPolygons()) {
+                if (cushionArea.contains(whiteBall.position.x, whiteBall.position.y)) {
+                    //Restore to original position 
+                    whiteBall.position = new Vector2D(originalX, originalY);
+                }
+            }
+
+            //Check inside playing area
+            if (!(whiteBall.position.x >= 10 && whiteBall.position.x <= gameWidth - 10 && whiteBall.position.y >= 10 && whiteBall.position.y <= gameHeight - 10)) {
                 //Restore to original position 
                 whiteBall.position = new Vector2D(originalX, originalY);
             }
-        }
 
-        //Check not in pockets
-        for (Pocket pocket : pockets.values()) {
-            if (pocket.hasPocketed(whiteBall)) {
+            //Check if in restricted quarter during break 
+            if(!broken) {
+                if (!(whiteBall.position.x >= 3 * gameWidth / 4 && whiteBall.position.x <= gameWidth - 10 && whiteBall.position.y >= 10 && whiteBall.position.y <= gameHeight - 10)) {
                 //Restore to original position 
                 whiteBall.position = new Vector2D(originalX, originalY);
             }
-        }
-
-        //Check not inside cushions
-        for (Polygon cushionArea : cushionsInfo.getCushionPolygons()) {
-            if (cushionArea.contains(whiteBall.position.x, whiteBall.position.y)) {
-                //Restore to original position 
-                whiteBall.position = new Vector2D(originalX, originalY);
             }
-        }
 
-        //Check inside playing area
-        if (!(whiteBall.position.x >= 10 && whiteBall.position.x <= gameWidth - 10 && whiteBall.position.y >= 10 && whiteBall.position.y <= gameHeight - 10)) {
-            //Restore to original position 
-            whiteBall.position = new Vector2D(originalX, originalY);
+            //Update aiming cue and shot predictor after white ball drag 
+            aimingCue.whiteBallPos = whiteBall.position;
+            aimingCue.repositionCue();
+            updateShotPrediction();
         }
-
-        //Check if in restricted quarter during break 
-        if(!broken) {
-            if (!(whiteBall.position.x >= 3 * gameWidth / 4 && whiteBall.position.x <= gameWidth - 10 && whiteBall.position.y >= 10 && whiteBall.position.y <= gameHeight - 10)) {
-            //Restore to original position 
-            whiteBall.position = new Vector2D(originalX, originalY);
-        }
-        }
-
-        //Update aiming cue and shot predictor after white ball drag 
-        aimingCue.whiteBallPos = whiteBall.position;
-        aimingCue.repositionCue();
-        updateShotPrediction();
     }
 
 

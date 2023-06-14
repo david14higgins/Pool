@@ -348,9 +348,14 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             //LEFT CLICK - Static Collisions or (TEMPORARILY!) moving edges
             if(e.getButton() == MouseEvent.BUTTON1) {
                 //Select ball for drag event - will need restricting 
-                for(Ball b : poolGame.balls) {
-                    if (poolGame.ballClicked(b, xGameClick, yGameClick)) {
-                        b.selected = true;
+                //for(Ball b : poolGame.balls) {
+                //    if (poolGame.ballClicked(b, xGameClick, yGameClick)) {
+                //        b.selected = true;
+                //    }
+                //}
+                if(poolGame.ballClicked(poolGame.whiteBall, xGameClick, yGameClick)) {
+                    if(poolGame.mayDragWhiteBall){
+                        poolGame.whiteBall.selected = true;
                     }
                 }
 
@@ -402,9 +407,9 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             }
 
             //TEMP 
-            for (Ball b : poolGame.balls) {
-                if(b.selected) {b.position = new Vector2D(xGameClick, yGameClick);}
-            }
+            //for (Ball b : poolGame.balls) {
+            //    if(b.selected) {b.position = new Vector2D(xGameClick, yGameClick);}
+            //}
         }
 
         if(powerArea.containsMouse(e.getX(), e.getY())) {
@@ -439,9 +444,9 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
 
                 //TEMP 
-                for (Ball b : poolGame.balls) {
-                    b.selected = false; 
-                }
+                //for (Ball b : poolGame.balls) {
+                //    b.selected = false; 
+                //}
             }
         }
 
