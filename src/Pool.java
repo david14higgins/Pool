@@ -50,12 +50,10 @@ public class Pool {
 
     private ArrayList<Ball> ballsToProcess; 
 
-    public int numYellowBallsPocketed = 0; 
-    public int numRedBallsPocketed = 0; 
-    public boolean blackPocketed = false;
-
     public CushionsInfo cushionsInfo; 
 
+    public int numYellowBallsPocketed = 0; 
+    public int numRedBallsPocketed = 0; 
     public boolean broken; 
     public boolean decided; 
     public boolean playerOneRed; 
@@ -63,6 +61,9 @@ public class Pool {
     public boolean mayDragWhiteBall; 
     public boolean whiteBallBeingDragged;
     public boolean firstBallHitBool; 
+    public boolean blackPocketedByP1 = false;
+    public boolean blackPocketedByP2 = false;
+
 
     private Ball firstBallHitBall; 
 
@@ -102,7 +103,10 @@ public class Pool {
         whiteBallBeingDragged = false;
         //A ball has not been hit first yet 
         firstBallHitBool = false; 
-        //Output message 
+        //Neither player has pocketed black ball yet 
+        blackPocketedByP1 = false; 
+        blackPocketedByP2 = false; 
+        //Starting output message 
         outputMessage = "Player One to break. You may move the white ball";
     }
 
@@ -439,7 +443,12 @@ public class Pool {
                 numYellowBallsPocketed += 1;
                 balls.remove(ball);
             } else if(ball.colour == Ball.BallColours.Black) {
-                blackPocketed = true; 
+                //NEEDS MOVING TO PROCESSING SHOT 
+                if(playerOneTurn) {
+                    blackPocketedByP1 = true; 
+                } else {
+                    blackPocketedByP2 = true;
+                }
                 balls.remove(ball);
             }
             

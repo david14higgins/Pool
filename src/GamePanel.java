@@ -246,7 +246,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         }
         //Black ball
         g2.setColor(Color.BLACK);
-        if(poolGame.blackPocketed) {
+        if(poolGame.playerOneRed && poolGame.blackPocketedByP1) {
             g2.setComposite(alphaCompositeFilled);
         } else {
             g2.setComposite(alphaCompositeTransparent);
@@ -270,7 +270,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         }
         //Black ball
         g2.setColor(Color.BLACK);
-        if(poolGame.blackPocketed) {
+        if(!poolGame.playerOneRed && poolGame.blackPocketedByP2) {
             g2.setComposite(alphaCompositeFilled);
         } else {
             g2.setComposite(alphaCompositeTransparent);
