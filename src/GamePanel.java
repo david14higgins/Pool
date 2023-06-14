@@ -347,17 +347,19 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
             //LEFT CLICK - Static Collisions or (TEMPORARILY!) moving edges
             if(e.getButton() == MouseEvent.BUTTON1) {
-                //Select ball for drag event - will need restricting 
-                //for(Ball b : poolGame.balls) {
-                //    if (poolGame.ballClicked(b, xGameClick, yGameClick)) {
-                //        b.selected = true;
-                //    }
-                //}
+                
                 if(poolGame.ballClicked(poolGame.whiteBall, xGameClick, yGameClick)) {
                     if(poolGame.mayDragWhiteBall){
                         poolGame.whiteBall.selected = true;
                     }
                 }
+
+                //TEMP 
+                //for (Ball b : poolGame.balls) {
+                //    if (poolGame.ballClicked(b, xGameClick, yGameClick)) {
+                //        b.selected = true; 
+                //    }
+                //}
 
                 //Check if power cue is selected
                 poolGame.aimingCue.checkClicked(xGameClick, yGameClick);

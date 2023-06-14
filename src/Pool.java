@@ -19,6 +19,7 @@ public class Pool {
     //At least need white ball field for cue to update its position
     public Ball whiteBall;
     public Ball blackBall;
+    private int ballRadius; 
 
     //Data structure for handling collisions
     public ArrayList<Ball[]> collidingPairs;
@@ -128,7 +129,7 @@ public class Pool {
         //Create balls
         balls = new ArrayList<>();
         
-        int ballRadius = 12 ;
+        ballRadius = 12;
 
         //White ball
         whiteBall = new Ball(ballRadius, new Vector2D(3 * gameWidth / 4, gameHeight / 2), Ball.BallColours.White);
@@ -466,6 +467,8 @@ public class Pool {
                     blackPocketedByP2 = true;
                 }
                 balls.remove(ball);
+            } else { //White ball
+                balls.remove(ball);
             }
             
         }
@@ -482,9 +485,11 @@ public class Pool {
         if(!processed) {processed = blackBallNotPocketedAlone();}
         if(!processed) {processed = blackBallPocketedIndirectly();}
         if(!processed) {processed = blackBallPocketedCorrectly();}
+        if(!processed) {processed = pocketWhiteBallOnly();}
         if(!processed) {processed = noBallsHit();}
         if(!processed) {processed = blackBallHitEarly();}
         if(!processed) {processed = unpocketedShot();}
+        
 
         pocketedBallsToProcess.clear();
         gameState = GameState.PREPARE_TO_TAKE_SHOT; 
@@ -626,6 +631,53 @@ public class Pool {
             return true; 
         }
         return false; 
+    }
+
+    //
+    private boolean pocketWhiteBallOnly() {
+        if (pocketedBallsToProcess.size() == 1) {
+            if (pocketedBallsToProcess.get(0).colour == Ball.BallColours.White) {
+                replaceWhiteBall();
+                //reset aimingCue and shot predictor 
+                aimingCue.initializeCue();
+                aimingCue.whiteBallPos = whiteBall.position; 
+                aimingCue.repositionCue();
+                updateShotPrediction();
+                if(playerOneTurn) {
+                    outputMessage = "Potted white ball, player two you may move the white ball"; 
+                    playerOneTurn = false; 
+                } else {
+                    outputMessage = "Potted white ball, player one you may move the white ball"; 
+                    playerOneTurn = true; 
+                }
+                mayDragWhiteBall = true;
+                return true; 
+            }
+        }
+        return false;
+    }
+
+    //Place white ball back in its original place (or near)
+    private void replaceWhiteBall() {
+        whiteBall.radius = ballRadius; 
+        Boolean validPosition = false; 
+        int maxXDistance = 0; 
+        int maxYDistance = 0; 
+        while(!validPosition) {
+            Boolean collision = false; 
+            double xDistance = Math.random() * maxXDistance;
+            double yDistance = Math.random() * maxYDistance - (maxYDistance / 2);
+            whiteBall.position = new Vector2D(3 * gameWidth / 4 + xDistance, gameHeight / 2 + yDistance);
+            for (Ball b : balls) {
+                if(checkForBallsCollision(whiteBall, b, false)) {
+                    collision = true; 
+                }
+            }
+            validPosition = collision ? false : true; 
+            maxXDistance += 10; 
+            maxYDistance += 20; 
+        }
+        balls.add(whiteBall); 
     }
 
     //Should this be public?
