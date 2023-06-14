@@ -63,8 +63,9 @@ public class Pool {
     public boolean mayDragWhiteBall; 
     public boolean whiteBallBeingDragged;
     public boolean firstBallHitBool; 
-    public boolean blackPocketedByP1 = false;
-    public boolean blackPocketedByP2 = false;
+    public boolean blackPocketedByP1;
+    public boolean blackPocketedByP2;
+    public boolean gameOver;
 
 
     private Ball firstBallHitBall; 
@@ -109,6 +110,8 @@ public class Pool {
         //Neither player has pocketed black ball yet 
         blackPocketedByP1 = false; 
         blackPocketedByP2 = false; 
+        //Game not over 
+        gameOver = false; 
         //Starting output message 
         outputMessage = "Player One to break. You may move the white ball";
     }
@@ -458,16 +461,42 @@ public class Pool {
         }
     }
 
-    private void processShot() {
-
-        for(Ball ball : pocketedBallsToProcess) {
-            System.out.println(ball.colour);
-        }
+    private void processShot() { 
+        boolean processed = false; 
+        processed = earlyBlackBallPocketed();
+        
 
         pocketedBallsToProcess.clear();
         gameState = GameState.PREPARE_TO_TAKE_SHOT; 
     }
 
+    //The following are a series of methods to deal with different situations that might have occured 
+    private boolean earlyBlackBallPocketed() {
+        for (Ball ball : pocketedBallsToProcess) {
+            if (ball.colour == Ball.BallColours.Black) {
+                //Black ball pocketed during break
+                if (!broken) {
+                    gameOver = true; 
+                    outputMessage = "Black ball pocketed during break. Click anywhere to re-rack";
+                    return true; 
+                } else {
+                    //Check player one pocketed early
+                    if(playerOneTurn && ((playerOneRed && numRedBallsPocketed < 7) || (!playerOneRed && numYellowBallsPocketed < 7))) { 
+                        gameOver = true; 
+                        outputMessage = "Player one pocketed black early. Player two wins!";
+                        return true; 
+                    } //Check player two pocketed early 
+                    else if (!playerOneTurn && ((playerOneRed && numYellowBallsPocketed < 7) || (!playerOneRed && numRedBallsPocketed < 7))) {
+                        gameOver = true; 
+                        outputMessage = "Player two pocketed black early. Player one wins!";
+                        return true;
+                    }
+                }
+            }
+        }
+        //None of the above scenarios have occured 
+        return false; 
+    }
 
     //Should this be public?
     public boolean ballClicked(Ball ball, double mouseX, double mouseY) {
