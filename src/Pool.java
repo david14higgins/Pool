@@ -747,9 +747,7 @@ public class Pool {
                         }
                     }
                 } else { //Player two's turn 
-                    
-                }
-
+                   
                 }
             }
         }
