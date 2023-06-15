@@ -282,32 +282,52 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
 
         //Text Output 
-        Font outputFont; 
-        try {
-            outputFont = Font.createFont(Font.TRUETYPE_FONT, new File("Fonts/Inconsolata-VariableFont_wdth,wght.ttf"));
-            outputFont = outputFont.deriveFont(Font.BOLD, 24);
-            // Register the font with the graphics environment
-            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            ge.registerFont(outputFont);
-        } catch (Exception e) {
-            outputFont = new Font("Arial", Font.BOLD, 12); 
-            e.printStackTrace();
-        }
+        g2.setColor(Color.white);
+
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+
+         
+        
 
 
         String message = poolGame.outputMessage;
 
-        g2.setFont(outputFont);
-        g2.setColor(Color.white);
+        //Adjust font size until message fits message area 
+        boolean messageFits = false; 
 
-        //Calculate where message should be drawn 
-        FontMetrics fontMetrics = g2.getFontMetrics();
+        Font outputFont; 
+        int fontSize = 24; 
+        int stringWidth = 0; 
+        int stringHeight = 0; 
+        int ascent = 0; 
+        int descent = 0;
+        
+        while(!messageFits) {
+            try {
+                outputFont = Font.createFont(Font.TRUETYPE_FONT, new File("Fonts/Inconsolata-VariableFont_wdth,wght.ttf"));
+                outputFont = outputFont.deriveFont(Font.BOLD, fontSize);
+                // Register the font with the graphics environment
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                ge.registerFont(outputFont);
+            } catch (Exception e) {
+                outputFont = new Font("Arial", Font.BOLD, fontSize); 
+                e.printStackTrace();
+            }
 
-        int stringWidth = fontMetrics.stringWidth(message);
-        int stringHeight = fontMetrics.getHeight();
+            g2.setFont(outputFont);
+            FontMetrics fontMetrics = g2.getFontMetrics();
+            stringWidth = fontMetrics.stringWidth(message);
 
-        int ascent = fontMetrics.getAscent();
-        int descent = fontMetrics.getDescent();
+            stringHeight = fontMetrics.getHeight();
+            ascent = fontMetrics.getAscent();
+            descent = fontMetrics.getDescent();
+            messageFits = stringWidth < messageArea.width - 10; 
+            
+            if(!messageFits) {
+                fontSize -= 2;
+            }
+        }
 
         int messageXPos = messageArea.x + (messageArea.width / 2) - (stringWidth / 2);
         int messageYPos = messageArea.y + ((messageArea.height  - ascent + descent) / 2) + (stringHeight / 2); 

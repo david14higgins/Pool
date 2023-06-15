@@ -474,22 +474,22 @@ public class Pool {
     }
 
     private void processShot() { 
-        boolean processed = false; 
-        processed = earlyBlackBallPocketed();        
+        boolean handled = false; 
+        handled = earlyBlackBallPocketed();        
         //The above scenario is the only one that concerns itself with the broken boolean
-
+        if(!broken) {broken = true;}
         //These methods check for certain outcomes. Results of earlier checks becomes assumptions in later checks to reduce work 
         //e.g. if checks after "noBallsHit()" are performed, this implies a ball has been hit and other checks do not need to worry about this
-        if(!broken) {broken = true;}
-        if(!processed) {processed = blackBallNotPocketedAlone();}
-        if(!processed) {processed = blackBallPocketedIndirectly();}
-        if(!processed) {processed = blackBallPocketedCorrectly();}
-        if(!processed) {processed = pocketWhiteBallOnly();}
-        if(!processed) {processed = noBallsHit();}
-        if(!processed) {processed = blackBallHitEarly();}
-        if(!processed) {processed = unpocketedShot();}
-        if(!processed) {processed = whiteBallPocketed();}
-        if(!processed) {processed = singleColourBallPocketed();};
+        if(!handled) {handled = blackBallNotPocketedAlone();}
+        if(!handled) {handled = blackBallPocketedIndirectly();}
+        if(!handled) {handled = blackBallPocketedCorrectly();}
+        if(!handled) {handled = pocketWhiteBallOnly();}
+        if(!handled) {handled = noBallsHit();}
+        if(!handled) {handled = blackBallHitEarly();}
+        if(!handled) {handled = unpocketedShot();}
+        if(!handled) {handled = whiteBallPocketed();}
+        if(!handled) {handled = singleColourBallPocketed();}
+        //Think about doing a separte "deciding routine" and then maybe only one white ball check
         
 
 
@@ -682,19 +682,19 @@ public class Pool {
                     if(playerOneTurn && otherColouredBall.colour == Ball.BallColours.Red) {
                         playerOneRed = true; 
                         playerOneTurn = false; 
-                        outputMessage = "Player one is red. Potted white ball, player two you may move the white ball";
+                        outputMessage = "Player one is red but potted white ball, player two (yellow) you may move the white ball";
                     } else if (playerOneTurn && otherColouredBall.colour == Ball.BallColours.Yellow) {
                         playerOneRed = false; 
                         playerOneTurn = false; 
-                        outputMessage = "Player one is yellow. Potted white ball, player two you may move the white ball";
+                        outputMessage = "Player one is yellow but potted white ball, player two (red) you may move the white ball";
                     } else if (!playerOneTurn && otherColouredBall.colour == Ball.BallColours.Red) {
                         playerOneRed = false; 
                         playerOneTurn = true; 
-                        outputMessage = "Player two is red. Potted white ball, player one you may move the white ball";
+                        outputMessage = "Player two is red but potted white ball, player one you may (yellow) move the white ball";
                     } else if (!playerOneTurn && otherColouredBall.colour == Ball.BallColours.Yellow){
                         playerOneRed = true; 
                         playerOneTurn = true; 
-                        outputMessage = "Player two is yellow. Potted white ball, player one you may move the white ball";
+                        outputMessage = "Player two is yellow but potted white ball, player one (red) you may move the white ball";
                     }
                     mayDragWhiteBall = true; 
                     decided = true; 
