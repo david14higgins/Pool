@@ -485,12 +485,12 @@ public class Pool {
         if(!handled) {handled = blackBallPocketedIndirectly();}
         if(!handled) {handled = blackBallPocketedCorrectly();}
         if(!handled) {handled = blackBallHitEarly();}
-        if(!handled) {handled = pocketWhiteBallOnly();}
         if(!handled) {handled = noBallsHit();}
-        if(!handled) {handled = unpocketedShot();}
+        if(!handled) {handled = noBallsPocketed();}
+        if(!handled) {handled = whiteBallPocketedOnly();}
         if(!handled) {handled = whiteBallPocketedAmongOthers();}
-        if(!handled) {handled = pocketedRedOnly();}
-        if(!handled) {handled = pocketedYellowOnly();}
+        if(!handled) {handled = redBallPocketedOnly();}
+        if(!handled) {handled = yellowBallPocketedOnly();}
         
     
         
@@ -645,35 +645,73 @@ public class Pool {
         return false; 
     }
 
-    
-    //-------NEED UPDATING FOR DECIDED SHOTS check correct ball hit first ---------
     //A shot where no balls are pocketed 
-    private boolean unpocketedShot() {
+    private boolean noBallsPocketed() {
         if (pocketedBallsToProcess.size() == 0) {
-            //Simply swap player turns and but do not allow white ball to be moved anywhere
-            if(playerOneTurn) {
-                if (!decided) {
+            //If colours decided, need to ensure their own colour was hit, otherwise no foul
+            if(decided) {
+                if(playerOneTurn) {
+                    if(playerOneRed) {
+                        if(firstBallHitBall.colour == Ball.BallColours.Red) { //no foul
+                            outputMessage = "Player two's turn (yellow)";
+                            mayDragWhiteBall = false; 
+                        } else {
+                            outputMessage = "Hit opponent's ball. Player two (yellow), you may move the white ball"; 
+                            mayDragWhiteBall = true; 
+                        }
+                        playerOneTurn = false; 
+                        return true;
+                    } else { //Player one yellow
+                        if(firstBallHitBall.colour == Ball.BallColours.Yellow) { //no foul
+                            outputMessage = "Player two's turn (red)";
+                            mayDragWhiteBall = false; 
+                        } else {
+                            outputMessage = "Hit opponent's ball. Player two (red), you may move the white ball"; 
+                            mayDragWhiteBall = true; 
+                        }
+                        playerOneTurn = false; 
+                        return true;
+                    }
+                } else { //Player two's turn 
+                    if(!playerOneRed) { //Player two red
+                        if(firstBallHitBall.colour == Ball.BallColours.Red) { //no foul
+                            outputMessage = "Player one's turn (yellow)";
+                            mayDragWhiteBall = false; 
+                        } else {
+                            outputMessage = "Hit opponent's ball. Player one (yellow), you may move the white ball"; 
+                            mayDragWhiteBall = true; 
+                        }
+                        playerOneTurn = true; 
+                        return true;
+                    } else { //Player two yellow
+                        if(firstBallHitBall.colour == Ball.BallColours.Yellow) { //no foul
+                            outputMessage = "Player one's turn (red)";
+                            mayDragWhiteBall = false; 
+                        } else {
+                            outputMessage = "Hit opponent's ball. Player one (red), you may move the white ball"; 
+                            mayDragWhiteBall = true; 
+                        }
+                        playerOneTurn = true; 
+                        return true;
+                    }
+                }
+            } else { //Undecided - simply swap turns 
+                if(playerOneTurn) {
                     outputMessage = "Player two's turn";
+                    playerOneTurn = false; 
                 } else {
-                    outputMessage = "Player two's turn " + (playerOneRed ? "(yellow)" : "(red)");
-                }
-                playerOneTurn = false; 
-            } else {
-                if (!decided) {
                     outputMessage = "Player one's turn";
-                } else {
-                    outputMessage = "Player one's turn " + (playerOneRed ? "(red)" : "(yellow)");
+                    playerOneTurn = true;
                 }
-                playerOneTurn = true;
+                mayDragWhiteBall = false; 
+                return true; 
             }
-            mayDragWhiteBall = false; 
-            return true; 
         }
         return false; 
     }
 
     //A shot whereby only a white ball went in 
-    private boolean pocketWhiteBallOnly() {
+    private boolean whiteBallPocketedOnly() {
         if (pocketedBallsToProcess.size() == 1) {
             if (pocketedBallsToProcess.get(0).colour == Ball.BallColours.White) {
                 replaceWhiteBall();
@@ -753,7 +791,7 @@ public class Pool {
 
     //For when just a singular red ball has been pocketed 
     //Could be the shot where player colours are allocated 
-    private boolean pocketedRedOnly() {
+    private boolean redBallPocketedOnly() {
         if (pocketedBallsToProcess.size() == 1) {
             if(pocketedBallsToProcess.get(0).colour == Ball.BallColours.Red) {
                 if(decided) {
@@ -813,7 +851,7 @@ public class Pool {
 
     //For when just a singular yellow ball has been pocketed 
     //Could be the shot where player colours are allocated 
-    private boolean pocketedYellowOnly() {
+    private boolean yellowBallPocketedOnly() {
         if (pocketedBallsToProcess.size() == 1) {
             if(pocketedBallsToProcess.get(0).colour == Ball.BallColours.Yellow) {
                 if(decided) {
