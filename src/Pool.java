@@ -480,6 +480,7 @@ public class Pool {
         if(!broken) {broken = true;}
         //These methods check for certain outcomes. Results of earlier checks becomes assumptions in later checks to reduce work 
         //e.g. if checks after "noBallsHit()" are performed, this implies a ball has been hit and other checks do not need to worry about this
+        //Certain methods also act differently if player colours are yet to be assigned
         if(!handled) {handled = blackBallPocketedEarly();}
         if(!handled) {handled = blackBallNotPocketedAlone();}
         if(!handled) {handled = blackBallPocketedIndirectly();}
@@ -489,8 +490,9 @@ public class Pool {
         if(!handled) {handled = noBallsPocketed();}
         if(!handled) {handled = whiteBallPocketedOnly();}
         if(!handled) {handled = whiteBallPocketedAmongOthers();}
-        if(!handled) {handled = redBallPocketedOnly();}
-        if(!handled) {handled = yellowBallPocketedOnly();}
+        if(!handled) {handled = redBallsPocketedOnly();}
+        if(!handled) {handled = yellowBallsPocketedOnly();}
+        //if(!handled) {handled = multipleRedBallsPocketed();}
         
     
         
@@ -789,11 +791,18 @@ public class Pool {
         return false; 
     }
 
-    //For when just a singular red ball has been pocketed 
+    //For when just red balls have been pocketed 
     //Could be the shot where player colours are allocated 
-    private boolean redBallPocketedOnly() {
-        if (pocketedBallsToProcess.size() == 1) {
-            if(pocketedBallsToProcess.get(0).colour == Ball.BallColours.Red) {
+    private boolean redBallsPocketedOnly() {
+        if (pocketedBallsToProcess.size() > 0) { 
+            //Assume true and look for counterexample 
+            boolean allRed = true; 
+            for (Ball ball : pocketedBallsToProcess) {
+                if (ball.colour != Ball.BallColours.Red){
+                    allRed = false; 
+                }
+            }
+            if(allRed) {
                 if(decided) {
                     if(playerOneTurn) {
                         if(playerOneRed) {
@@ -849,11 +858,19 @@ public class Pool {
         return false; 
     }
 
-    //For when just a singular yellow ball has been pocketed 
+    //For when just yellow balls have been pocketed 
     //Could be the shot where player colours are allocated 
-    private boolean yellowBallPocketedOnly() {
-        if (pocketedBallsToProcess.size() == 1) {
-            if(pocketedBallsToProcess.get(0).colour == Ball.BallColours.Yellow) {
+    private boolean yellowBallsPocketedOnly() {
+        if (pocketedBallsToProcess.size() > 0) {
+            //Assume true and look for counterexample 
+            boolean allYellow = true; 
+            for (Ball ball : pocketedBallsToProcess) {
+                if (ball.colour != Ball.BallColours.Yellow){
+                    allYellow = false; 
+                }
+            }
+            
+            if(allYellow) {
                 if(decided) {
                     if(playerOneTurn) {
                         if(!playerOneRed) {
@@ -908,6 +925,8 @@ public class Pool {
         }
         return false; 
     }
+
+    
 
 
     //Place white ball back in its original place (or near)
