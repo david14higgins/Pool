@@ -122,6 +122,7 @@ public class Pool {
         //TEMP 
         playerOneRed = true;
         playerOneTurn = true;
+        decided = true; 
     }
 
     private void createBalls() {
@@ -475,55 +476,61 @@ public class Pool {
 
     private void processShot() { 
         boolean handled = false; 
-        handled = earlyBlackBallPocketed();        
+        handled = blackPocketedOnBreak();        
         //The above scenario is the only one that concerns itself with the broken boolean
         if(!broken) {broken = true;}
         //These methods check for certain outcomes. Results of earlier checks becomes assumptions in later checks to reduce work 
         //e.g. if checks after "noBallsHit()" are performed, this implies a ball has been hit and other checks do not need to worry about this
+        if(!handled) {handled = blackBallPocketedEarly();}
         if(!handled) {handled = blackBallNotPocketedAlone();}
         if(!handled) {handled = blackBallPocketedIndirectly();}
         if(!handled) {handled = blackBallPocketedCorrectly();}
+        if(!handled) {handled = blackBallHitEarly();}
         if(!handled) {handled = pocketWhiteBallOnly();}
         if(!handled) {handled = noBallsHit();}
-        if(!handled) {handled = blackBallHitEarly();}
         if(!handled) {handled = unpocketedShot();}
         if(!handled) {handled = whiteBallPocketed();}
         if(!handled) {handled = singleColourBallPocketed();}
         //Think about doing a separte "deciding routine" and then maybe only one white ball check
         
-
-
         pocketedBallsToProcess.clear();
         gameState = GameState.PREPARE_TO_TAKE_SHOT; 
     }
 
     //The following are a series of methods to deal with different situations that might have occured 
-    private boolean earlyBlackBallPocketed() {
+    private boolean blackPocketedOnBreak() {
         for (Ball ball : pocketedBallsToProcess) {
             if (ball.colour == Ball.BallColours.Black) {
-                //Black ball pocketed during break
-                if (!broken) {
+                if(!broken) {
                     gameOver = true; 
                     outputMessage = "Black ball pocketed during break. Click anywhere to re-rack";
                     return true; 
-                } else {
-                    //Check player one pocketed early
-                    if(playerOneTurn && ((playerOneRed && numRedBallsPocketed < 7) || (!playerOneRed && numYellowBallsPocketed < 7))) { 
-                        gameOver = true; 
-                        outputMessage = "Player one pocketed black early. Player two wins!";
-                        return true; 
-                    } //Check player two pocketed early 
-                    else if (!playerOneTurn && ((playerOneRed && numYellowBallsPocketed < 7) || (!playerOneRed && numRedBallsPocketed < 7))) {
-                        gameOver = true; 
-                        outputMessage = "Player two pocketed black early. Player one wins!";
-                        return true;
-                    }
                 }
             }
         }
-        //None of the above scenarios have occured 
         return false; 
     }
+
+    //The black ball has been pocketed before all of a player's coloured balls
+    private boolean blackBallPocketedEarly() {
+        for (Ball ball : pocketedBallsToProcess) {
+            if (ball.colour == Ball.BallColours.Black) {
+                //Check player one pocketed early
+                if(playerOneTurn && ((playerOneRed && numRedBallsPocketed < 7) || (!playerOneRed && numYellowBallsPocketed < 7))) { 
+                    gameOver = true; 
+                    outputMessage = "Player one pocketed black early. Player two wins!";
+                    return true; 
+                } //Check player two pocketed early 
+                else if (!playerOneTurn && ((playerOneRed && numYellowBallsPocketed < 7) || (!playerOneRed && numRedBallsPocketed < 7))) {
+                    gameOver = true; 
+                    outputMessage = "Player two pocketed black early. Player one wins!";
+                    return true;
+                }
+            }
+        }
+        return false; 
+    }
+
 
     //Potting the black ball along with any other ball in a shot is considered a foul that loses the game 
     private boolean blackBallNotPocketedAlone() {
@@ -563,6 +570,7 @@ public class Pool {
         return false; 
     }
 
+    //Checking for winning end-game scenario
     private boolean blackBallPocketedCorrectly() {
         if (pocketedBallsToProcess.size() == 1) {
             if (pocketedBallsToProcess.get(0).colour == Ball.BallColours.Black) {
@@ -582,15 +590,52 @@ public class Pool {
         return false; 
     }
 
+    //It is a foul shot if the black ball is hit whilst you still have coloured balls 
+    private boolean blackBallHitEarly() {
+        if (firstBallHitBool) {
+            if(firstBallHitBall.colour == Ball.BallColours.Black) {
+                //Check player one 
+                if (playerOneTurn && ((playerOneRed && numRedBallsPocketed < 7) || (!playerOneRed && numYellowBallsPocketed < 7))) {
+                    if(!decided) {
+                        outputMessage = "Black ball hit, player two you may move the white ball"; 
+                    } else {
+                        outputMessage = "Black ball hit, player two " + (playerOneRed ? "(yellow)" : "(red)") + " you may move the white ball";
+                    }
+                    playerOneTurn = false; 
+                    mayDragWhiteBall = true; 
+                    return true; 
+                } else if (!playerOneTurn && ((playerOneRed && numYellowBallsPocketed < 7) || (!playerOneRed && numRedBallsPocketed < 7))) {
+                    if (!decided) {
+                        outputMessage = "Black ball hit, player one you may move the white ball"; 
+                    } else {
+                        outputMessage = "Black ball hit, player one " + (playerOneRed ? "(red)" : "(yellow)") + " you may move the white ball"; 
+                    }
+                    playerOneTurn = true; 
+                    mayDragWhiteBall = true; 
+                    return true; 
+                }
+            }
+        }        
+        return false; 
+    }
+
     //A foul shot where no balls were hit and opponent may move white ball anywhere 
     private boolean noBallsHit() {
         if (firstBallHitBool == false) {
             //Simply swap player turns and allow white ball to be moved anywhere
             if(playerOneTurn) {
-                outputMessage = "No ball hit, player two you may move the white ball";
+                if (!decided) {
+                    outputMessage = "No ball hit, player two you may move the white ball";
+                } else {
+                    outputMessage = "No ball hit, player two " + (playerOneRed ? "(yellow)" : "(red)") + " you may move the white ball"; 
+                }
                 playerOneTurn = false; 
             } else {
-                outputMessage = "No ball hit, player one you may move the white bal";
+                if (!decided) {
+                    outputMessage = "No ball hit, player one you may move the white ball";
+                } else {
+                    outputMessage = "No ball hit, player one " + (playerOneRed ? "(red)" : "(yellow)") + " you may move the white ball"; 
+                }
                 playerOneTurn = true;
             }
             mayDragWhiteBall = true; 
@@ -599,34 +644,25 @@ public class Pool {
         return false; 
     }
 
-    //It is a foul shot if the black ball is hit whilst you still have coloured balls 
-    private boolean blackBallHitEarly() {
-        if(firstBallHitBall.colour == Ball.BallColours.Black) {
-            //Check player one 
-            if (playerOneTurn && ((playerOneRed && numRedBallsPocketed < 7) || (!playerOneRed && numYellowBallsPocketed < 7))) {
-                outputMessage = "Black ball hit, player two you may move the white ball"; 
-                playerOneTurn = false; 
-                mayDragWhiteBall = true; 
-                return true; 
-            } else if (!playerOneTurn && ((playerOneRed && numYellowBallsPocketed < 7) || (!playerOneRed && numRedBallsPocketed < 7))) {
-                outputMessage = "Black ball hit, player one you may move the white ball"; 
-                playerOneTurn = true; 
-                mayDragWhiteBall = true; 
-                return true; 
-            }
-        }
-        return false; 
-    }
+    
 
     //A shot where no balls are pocketed 
     private boolean unpocketedShot() {
         if (pocketedBallsToProcess.size() == 0) {
             //Simply swap player turns and but do not allow white ball to be moved anywhere
             if(playerOneTurn) {
-                outputMessage = "Player two's turn";
+                if (!decided) {
+                    outputMessage = "Player two's turn";
+                } else {
+                    outputMessage = "Player two's turn " + (playerOneRed ? "(yellow)" : "(red)");
+                }
                 playerOneTurn = false; 
             } else {
-                outputMessage = "Player one's turn";
+                if (!decided) {
+                    outputMessage = "Player one's turn";
+                } else {
+                    outputMessage = "Player one's turn " + (playerOneRed ? "(red)" : "(yellow)");
+                }
                 playerOneTurn = true;
             }
             mayDragWhiteBall = false; 
