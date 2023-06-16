@@ -926,6 +926,36 @@ public class Pool {
         return false; 
     }
 
+    //When both red and yellow balls have been pocketed 
+    //(Can assume only red and yellows because otherwise a white ball or black ball event would have been handled)
+    private boolean redsAndYellowsPocketed() {
+        boolean redPocketed = false; 
+        boolean yellowPocketed = false; 
+        for (Ball ball : pocketedBallsToProcess) {
+            if(ball.colour == Ball.BallColours.Red) {
+                redPocketed = true; 
+            } else if (ball.colour == Ball.BallColours.Yellow) {
+                yellowPocketed = true; 
+            }
+        }
+
+        if(redPocketed && yellowPocketed) {
+            if(decided) {
+                if(playerOneTurn) {
+                    outputMessage = "Pocketed opponent's ball. Player two " + (playerOneRed ? "(yellow)" : "(red)") + " you may move the white ball"; 
+                    playerOneTurn = false; 
+                } else {
+                    outputMessage = "Pocketed opponent's ball. Player one " + (playerOneRed ? "(red)" : "(yellow)") + " you may move the white ball"; 
+                    playerOneTurn = true; 
+                }
+                mayDragWhiteBall = true; 
+                return true;
+            }
+        }
+
+        return false; 
+    }
+
     
 
 

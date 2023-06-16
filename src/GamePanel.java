@@ -7,6 +7,7 @@ import java.awt.image.AreaAveragingScaleFilter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.awt.geom.RoundRectangle2D;
 
 
 public class GamePanel extends JPanel implements Runnable, MouseListener, MouseMotionListener {
@@ -94,15 +95,54 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
         Graphics2D g2 = (Graphics2D) g;
 
+        //Colours 
+        Color redBallsColour = Color.RED; 
+        Color yellowBallsColour = Color.YELLOW; 
+        Color whiteBallColour = Color.WHITE; 
+        Color blackBallColour = Color.BLACK; 
+        Color panelColour = Color.black; 
+        Color playAreaBackgroundColor = Color.BLACK; 
+        Color lineColour = Color.lightGray; 
+        Color highlightColur = Color.GREEN;
+        Color cushionColour = new Color(109, 103, 110);
+        Color pocketColour = Color.darkGray; 
+        Color textColour = Color.white; 
+        
+
+        //---------Paint Program Compartments-----------
+
+        // Enable antialiasing for smooth edges
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        //Play area border
+        g2.setColor(panelColour);
+        for (Compartment c : compartments) {
+            // g2.fillRect(c.x - 5, c.y - 5, c.width + 10, 5);
+            // g2.fillRect(c.x - 5, c.y, 5, c.height);
+            // g2.fillRect(c.x + c.width, c.y, 5, c.height);
+            // g2.fillRect(c.x - 5, c.y + c.height, c.width + 10, 5);
+
+
+            int cornerRadius = 30; // Adjust the corner radius as needed
+
+            // Create a rounded rectangle shape
+            RoundRectangle2D roundedRect = new RoundRectangle2D.Double(c.x, c.y, c.width, c.height, cornerRadius, cornerRadius);
+
+
+            g2.fill(roundedRect);
+        }
+
         //Drawing pocketed balls counters 
         AlphaComposite alphaCompositeFilled = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f);
-        AlphaComposite alphaCompositeTransparent = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f);
+        AlphaComposite alphaCompositeTransparent = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f);
 
         //Paint play area background 
-        g2.setColor(Color.lightGray);
+        g2.setColor(playAreaBackgroundColor); 
+        g2.fillRect(playArea.x, playArea.y, playArea.x + playArea.width, playArea.y + playArea.height);
+        g2.setColor(lineColour);
         g2.setComposite(alphaCompositeTransparent);
         g2.drawLine(playArea.x + playArea.width * 3 / 4, playArea.y, playArea.x + playArea.width * 3 / 4, playArea.y + playArea.height);
-        g2.setColor(Color.green);
+        g2.setColor(highlightColur);
         if(!poolGame.broken && poolGame.whiteBallBeingDragged) {
             g2.fillRect(playArea.x + playArea.width * 3 / 4, playArea.y, playArea.width / 4, playArea.height);
         } else if (poolGame.broken && poolGame.whiteBallBeingDragged) {
@@ -112,7 +152,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
         //---------Paint Edges-----------
         for (Edge edge : poolGame.edges) {
-            g2.setColor(new Color(109, 103, 110));
+            g2.setColor(cushionColour);
             int paintPosStartX = (int) edge.getStart().x - edge.radius;
             int paintPosStartY = (int) edge.getStart().y - edge.radius;
             int paintPosEndX = (int) edge.getEnd().x - edge.radius;
@@ -144,7 +184,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             }
 
             //Fill background gaps
-            g2.setColor(new Color(251, 255, 254));
+            g2.setColor(panelColour);
             g2.fillRect(playArea.x, playArea.y, playArea.width, 10);
             g2.fillRect(playArea.x, playArea.y + playArea.height - 10, playArea.width, 10);
             g2.fillRect(playArea.x, playArea.y, 10, playArea.height);
@@ -154,7 +194,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         //---------Paint Pockets
         
         for (Pocket.Position position: poolGame.pockets.keySet()) {
-            g2.setColor(Color.darkGray);
+            g2.setColor(pocketColour);
             Pocket pocket = poolGame.pockets.get(position);
             int paintPointX = (int) pocket.getPositionVec().x - pocket.radius;
             int paintPointY = (int) pocket.getPositionVec().y - pocket.radius;
@@ -170,16 +210,16 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
             switch (ball.colour) {
                 case White:
-                    g2.setColor(Color.WHITE);
+                    g2.setColor(whiteBallColour);
                     break;
                 case Black:
-                    g2.setColor(Color.BLACK);
+                    g2.setColor(blackBallColour);
                     break;
                 case Red:
-                    g2.setColor(Color.RED);
+                    g2.setColor(redBallsColour);
                     break;
                 case Yellow:
-                    g2.setColor(Color.YELLOW);
+                    g2.setColor(yellowBallsColour);
                     break;
             }
 
@@ -188,7 +228,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
 
         //Draw Aiming Cue
-        g2.setColor(Color.black);
+        g2.setColor(Color.white);
         if(poolGame.gameState == GameState.TAKING_SHOT) {
             Polygon cueVertices = poolGame.aimingCue.getCueVertices();
             for (int i = 0; i < cueVertices.npoints; i++) {
@@ -196,7 +236,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 cueVertices.xpoints[i] += playArea.x;
                 cueVertices.ypoints[i] += playArea.y;
             }
-            g2.drawPolygon(cueVertices);
+            g2.fillPolygon(cueVertices);
         }
 
         //Drawing Power Cue 
@@ -206,7 +246,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             cueVertices.xpoints[i] += powerArea.x;
             cueVertices.ypoints[i] += powerArea.y;
         }
-        g2.drawPolygon(cueVertices);
+        g2.fillPolygon(cueVertices);
 
 
         if (poolGame.gameState == GameState.TAKING_SHOT) {
@@ -231,7 +271,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
         //Reds 
         //Pocketed
-        g2.setColor(Color.RED);
+        //g2.setColor(Color.RED);
+        g2.setColor(redBallsColour);
         g2.setComposite(alphaCompositeFilled);
         int redBallX = 10;
         for (int i = 0; i < poolGame.numRedBallsPocketed; i++) {
@@ -245,7 +286,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             redBallX += 25;
         }
         //Black ball
-        g2.setColor(Color.BLACK);
+        g2.setColor(blackBallColour);
         if(poolGame.playerOneRed && poolGame.blackPocketedByP1) {
             g2.setComposite(alphaCompositeFilled);
         } else {
@@ -255,7 +296,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
         //Yellows
         //Pocketed
-        g2.setColor(Color.YELLOW);
+        //g2.setColor(Color.YELLOW);
+        g2.setColor(yellowBallsColour);
         g2.setComposite(alphaCompositeFilled);
         int yellowBallX = 10;
         for (int i = 0; i < poolGame.numYellowBallsPocketed; i++) {
@@ -269,7 +311,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             yellowBallX += 25;
         }
         //Black ball
-        g2.setColor(Color.BLACK);
+        g2.setColor(blackBallColour);
         if(!poolGame.playerOneRed && poolGame.blackPocketedByP2) {
             g2.setComposite(alphaCompositeFilled);
         } else {
@@ -282,13 +324,9 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
 
         //Text Output 
-        g2.setColor(Color.white);
+        g2.setColor(textColour);
 
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
-
-         
-        
 
 
         String message = poolGame.outputMessage;
@@ -334,15 +372,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         
         g2.drawString(message, messageXPos, messageYPos);
 
-        //---------Paint Program Compartments-----------
-        //Play area border
-        g2.setColor(Color.white);
-        for (Compartment c : compartments) {
-            g2.fillRect(c.x - 5, c.y - 5, c.width + 10, 5);
-            g2.fillRect(c.x - 5, c.y, 5, c.height);
-            g2.fillRect(c.x + c.width, c.y, 5, c.height);
-            g2.fillRect(c.x - 5, c.y + c.height, c.width + 10, 5);
-        }
+  
 
         g2.dispose();
     }
@@ -375,11 +405,11 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 }
 
                 //TEMP 
-                for (Ball b : poolGame.balls) {
-                    if (poolGame.ballClicked(b, xGameClick, yGameClick)) {
-                        b.selected = true; 
-                    }
-                }
+                //for (Ball b : poolGame.balls) {
+                //    if (poolGame.ballClicked(b, xGameClick, yGameClick)) {
+                //        b.selected = true; 
+                //    }
+                //}
 
                 //Check if power cue is selected
                 poolGame.aimingCue.checkClicked(xGameClick, yGameClick);
@@ -429,9 +459,9 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             }
 
             //TEMP 
-            for (Ball b : poolGame.balls) {
-                if(b.selected) {b.position = new Vector2D(xGameClick, yGameClick);}
-            }
+            //for (Ball b : poolGame.balls) {
+            //    if(b.selected) {b.position = new Vector2D(xGameClick, yGameClick);}
+           // }
         }
 
         if(powerArea.containsMouse(e.getX(), e.getY())) {
@@ -466,9 +496,9 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
 
                 //TEMP 
-                for (Ball b : poolGame.balls) {
-                    b.selected = false; 
-                }
+                //for (Ball b : poolGame.balls) {
+                //    b.selected = false; 
+                //}
             }
         }
 
