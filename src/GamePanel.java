@@ -38,7 +38,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        this.setBackground(Color.gray);
+        this.setBackground(new Color(0, 70, 0));
         this.setDoubleBuffered(true);
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
@@ -96,23 +96,26 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         Graphics2D g2 = (Graphics2D) g;
 
         //Colours 
+       // Color redBallsColour = new Color(0,180,228); 
+        //Color yellowBallsColour = new Color(255, 95, 31); 
         Color redBallsColour = Color.RED; 
-        Color yellowBallsColour = Color.YELLOW; 
+        Color yellowBallsColour = Color.YELLOW;
         Color whiteBallColour = Color.WHITE; 
         Color blackBallColour = Color.BLACK; 
-        Color panelColour = Color.black; 
+        Color panelColour = new Color(0, 50, 0); 
         Color playAreaBackgroundColor = Color.BLACK; 
         Color lineColour = Color.lightGray; 
         Color highlightColur = Color.GREEN;
-        Color cushionColour = new Color(109, 103, 110);
-        Color pocketColour = Color.darkGray; 
+        Color cushionColour = new Color(0, 70, 0);
+        Color pocketColour = Color.BLACK; 
         Color textColour = Color.white; 
+        Color cueColour = Color.BLACK; 
         
 
         //---------Paint Program Compartments-----------
 
         // Enable antialiasing for smooth edges
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        //g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         //Play area border
         g2.setColor(panelColour);
@@ -134,11 +137,11 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
         //Drawing pocketed balls counters 
         AlphaComposite alphaCompositeFilled = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f);
-        AlphaComposite alphaCompositeTransparent = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f);
+        AlphaComposite alphaCompositeTransparent = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
 
         //Paint play area background 
         g2.setColor(playAreaBackgroundColor); 
-        g2.fillRect(playArea.x, playArea.y, playArea.x + playArea.width, playArea.y + playArea.height);
+        //g2.fillRect(playArea.x, playArea.y, playArea.x + playArea.width, playArea.y + playArea.height);
         g2.setColor(lineColour);
         g2.setComposite(alphaCompositeTransparent);
         g2.drawLine(playArea.x + playArea.width * 3 / 4, playArea.y, playArea.x + playArea.width * 3 / 4, playArea.y + playArea.height);
@@ -184,11 +187,13 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             }
 
             //Fill background gaps
-            g2.setColor(panelColour);
+            g2.setColor(cushionColour);
             g2.fillRect(playArea.x, playArea.y, playArea.width, 10);
             g2.fillRect(playArea.x, playArea.y + playArea.height - 10, playArea.width, 10);
             g2.fillRect(playArea.x, playArea.y, 10, playArea.height);
             g2.fillRect(playArea.x + playArea.width - 10, playArea.y, 10, playArea.height);
+
+            
         }
 
         //---------Paint Pockets
@@ -224,11 +229,13 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             }
 
             g2.fillArc(playArea.x + paintXPos,playArea.y + paintYPos, diameter, diameter, 0, 360);
+            
+
         }
 
 
         //Draw Aiming Cue
-        g2.setColor(Color.white);
+        g2.setColor(cueColour);
         if(poolGame.gameState == GameState.TAKING_SHOT) {
             Polygon cueVertices = poolGame.aimingCue.getCueVertices();
             for (int i = 0; i < cueVertices.npoints; i++) {

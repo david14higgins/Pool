@@ -486,10 +486,10 @@ public class Pool {
         if(!handled) {handled = blackBallPocketedIndirectly();}
         if(!handled) {handled = blackBallPocketedCorrectly();}
         if(!handled) {handled = blackBallHitEarly();}
-        if(!handled) {handled = noBallsHit();}
-        if(!handled) {handled = noBallsPocketed();}
         if(!handled) {handled = whiteBallPocketedOnly();}
         if(!handled) {handled = whiteBallPocketedAmongOthers();}
+        if(!handled) {handled = noBallsHit();}
+        if(!handled) {handled = noBallsPocketed();}
         if(!handled) {handled = redBallsPocketedOnly();}
         if(!handled) {handled = yellowBallsPocketedOnly();}
         //if(!handled) {handled = multipleRedBallsPocketed();}
