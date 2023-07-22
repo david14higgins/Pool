@@ -36,6 +36,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
     //(How far should the power cue be dragged)
     private final double minShotPower = 0.05;
 
+    //Set up game panel 
     public GamePanel() {
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.setBackground(new Color(0, 70, 0));
@@ -53,6 +54,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         gameThread = new Thread(this);
         gameThread.start();
     }
+    
+    //Create game loop
     @Override
     public void run() {
         double drawInterval = 1000000000/FPS;
@@ -90,51 +93,54 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         poolGame.update();
     }
 
+    //-------- OUTPUT HANDLING ------------
+
+    //Painting Colour Palette 
+    private Color redBallsColour = Color.RED; 
+    private Color yellowBallsColour = Color.YELLOW;
+    private Color whiteBallColour = Color.WHITE; 
+    private Color blackBallColour = Color.BLACK; 
+    private Color panelColour = new Color(0, 50, 0); 
+    private Color playAreaBackgroundColor = Color.BLACK; 
+    private Color lineColour = Color.lightGray; 
+    private Color highlightColur = Color.GREEN;
+    private Color cushionColour = new Color(0, 70, 0);
+    private Color pocketColour = Color.BLACK; 
+    private Color textColour = Color.WHITE; 
+    private Color cueColour = Color.BLACK; 
+
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D) g;
 
-        //Colours 
-       // Color redBallsColour = new Color(0,180,228); 
-        //Color yellowBallsColour = new Color(255, 95, 31); 
-        Color redBallsColour = Color.RED; 
-        Color yellowBallsColour = Color.YELLOW;
-        Color whiteBallColour = Color.WHITE; 
-        Color blackBallColour = Color.BLACK; 
-        Color panelColour = new Color(0, 50, 0); 
-        Color playAreaBackgroundColor = Color.BLACK; 
-        Color lineColour = Color.lightGray; 
-        Color highlightColur = Color.GREEN;
-        Color cushionColour = new Color(0, 70, 0);
-        Color pocketColour = Color.BLACK; 
-        Color textColour = Color.white; 
-        Color cueColour = Color.BLACK; 
+        paintCompartments(g2);
+        paintPlayArea(g2);
+        paintCushions(g2);
+        paintPockets(g2); 
+        paintBalls(g2); 
+        paintAimingCue(g2);
+        paintPowerCue(g2); 
+        paintShotPredictor(g2);
+        paintPocketedBallsCounters(g2); 
+        paintTextOutput(g2); 
         
+        g2.dispose();
+    } 
 
-        //---------Paint Program Compartments-----------
-
-        //Play area border
+    private void paintCompartments(Graphics2D g2) {
         g2.setColor(panelColour);
         for (Compartment c : compartments) {
             int cornerRadius = 30; // Adjust the corner radius as needed
-
             // Create a rounded rectangle shape
             RoundRectangle2D roundedRect = new RoundRectangle2D.Double(c.x, c.y, c.width, c.height, cornerRadius, cornerRadius);
-
-
             g2.fill(roundedRect);
         }
+    }
 
-        //Drawing pocketed balls counters 
-        AlphaComposite alphaCompositeFilled = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f);
-        AlphaComposite alphaCompositeTransparent = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
-
-        //Paint play area background 
-        g2.setColor(playAreaBackgroundColor); 
-        //g2.fillRect(playArea.x, playArea.y, playArea.x + playArea.width, playArea.y + playArea.height);
+    //Paints game's white line and highlighted areas if white ball is being dragged 
+    private void paintPlayArea(Graphics2D g2) {
         g2.setColor(lineColour);
-        g2.setComposite(alphaCompositeTransparent);
         g2.drawLine(playArea.x + playArea.width * 3 / 4, playArea.y, playArea.x + playArea.width * 3 / 4, playArea.y + playArea.height);
         g2.setColor(highlightColur);
         if(!poolGame.isBroken() && poolGame.isWhiteBallBeingDragged()) {
@@ -142,11 +148,11 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         } else if (poolGame.isBroken() && poolGame.isWhiteBallBeingDragged()) {
             g2.fillRect(playArea.x, playArea.y, playArea.width, playArea.height);
         }
-        g2.setComposite(alphaCompositeFilled);
+    }
 
-        //---------Paint Edges-----------
+    private void paintCushions(Graphics2D g2) {
+        g2.setColor(cushionColour);
         for (Edge edge : poolGame.getEdges()) {
-            g2.setColor(cushionColour);
             int paintPosStartX = (int) edge.getStart().x - edge.radius;
             int paintPosStartY = (int) edge.getStart().y - edge.radius;
             int paintPosEndX = (int) edge.getEnd().x - edge.radius;
@@ -175,30 +181,27 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                     
                 }
                 g2.fillPolygon(newPoly);
-            }
-
-            //Fill background gaps
-            g2.setColor(cushionColour);
-            g2.fillRect(playArea.x, playArea.y, playArea.width, 10);
-            g2.fillRect(playArea.x, playArea.y + playArea.height - 10, playArea.width, 10);
-            g2.fillRect(playArea.x, playArea.y, 10, playArea.height);
-            g2.fillRect(playArea.x + playArea.width - 10, playArea.y, 10, playArea.height);
-
-            
+            } 
         }
+        //Fill background gaps
+        g2.fillRect(playArea.x, playArea.y, playArea.width, 10);
+        g2.fillRect(playArea.x, playArea.y + playArea.height - 10, playArea.width, 10);
+        g2.fillRect(playArea.x, playArea.y, 10, playArea.height);
+        g2.fillRect(playArea.x + playArea.width - 10, playArea.y, 10, playArea.height);
+    }
 
-        //---------Paint Pockets
-        
+    private void paintPockets(Graphics2D g2) {
+        g2.setColor(pocketColour);
         for (Pocket.Position position: poolGame.getPockets().keySet()) {
-            g2.setColor(pocketColour);
             Pocket pocket = poolGame.getPockets().get(position);
             int paintPointX = (int) pocket.getPositionVec().x - pocket.radius;
             int paintPointY = (int) pocket.getPositionVec().y - pocket.radius;
             int diameter = pocket.radius * 2;
             g2.fillArc(playArea.x + paintPointX, playArea.y + paintPointY, diameter, diameter, 0, 360);
         }
+    }
 
-         //---------Paint Balls-----------
+    private void paintBalls(Graphics2D g2) {
         for (Ball ball : poolGame.getBalls()) {
             int paintXPos = (int) (ball.position.x - ball.radius);
             int paintYPos = (int) (ball.position.y - ball.radius);
@@ -220,14 +223,12 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             }
 
             g2.fillArc(playArea.x + paintXPos,playArea.y + paintYPos, diameter, diameter, 0, 360);
-            
-
         }
+    }
 
-
-        //Draw Aiming Cue
-        g2.setColor(cueColour);
+    private void paintAimingCue(Graphics2D g2) {
         if(poolGame.getGameState() == GameState.TAKING_SHOT) {
+            g2.setColor(cueColour);
             Polygon cueVertices = poolGame.getAimingCue().getCueVertices();
             for (int i = 0; i < cueVertices.npoints; i++) {
                 //Update coordinates 
@@ -236,8 +237,9 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             }
             g2.fillPolygon(cueVertices);
         }
+    }
 
-        //Drawing Power Cue 
+    private void paintPowerCue(Graphics2D g2) {
         Polygon cueVertices = powerCue.getCueVertices();
         for (int i = 0; i < cueVertices.npoints; i++) {
             //Update coordinates 
@@ -245,8 +247,9 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             cueVertices.ypoints[i] += powerArea.y;
         }
         g2.fillPolygon(cueVertices);
+    }
 
-
+    private void paintShotPredictor(Graphics2D g2) {
         if (poolGame.getGameState() == GameState.TAKING_SHOT) {
             //Draw Shot Prediction 
             g2.setColor(Color.white);
@@ -266,9 +269,14 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 g2.drawLine(playArea.x + (int) sp.targetBall.x, playArea.y + (int) sp.targetBall.y, playArea.x + (int) sp.targetAfterEndPoint.x, playArea.y + (int) sp.targetAfterEndPoint.y);  
             }
         }
+    }
 
-        //Reds 
-        //Pocketed
+    private void paintPocketedBallsCounters(Graphics2D g2) {
+        //Two opacity settings (100% and 50%)
+        AlphaComposite alphaCompositeFilled = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f);
+        AlphaComposite alphaCompositeTransparent = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
+
+        //Pocketed Reds
         //g2.setColor(Color.RED);
         g2.setColor(redBallsColour);
         g2.setComposite(alphaCompositeFilled);
@@ -277,7 +285,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             g2.fillArc(redPocketedArea.x + redBallX, redPocketedArea.y + 10, 20, 20, 0, 360);
             redBallX += 25;
         }
-        //Unpocketed
+        //Unpocketed Reds
         g2.setComposite(alphaCompositeTransparent);
         for (int i = poolGame.getNumRedBallsPocketed(); i < 7; i++) {
             g2.fillArc(redPocketedArea.x + redBallX, redPocketedArea.y + 10, 20, 20, 0, 360);
@@ -292,9 +300,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         }
         g2.fillArc(redPocketedArea.x + redBallX, redPocketedArea.y + 10, 20, 20, 0, 360);
 
-        //Yellows
-        //Pocketed
-        //g2.setColor(Color.YELLOW);
+        //Pocketed Yellows
         g2.setColor(yellowBallsColour);
         g2.setComposite(alphaCompositeFilled);
         int yellowBallX = 10;
@@ -302,7 +308,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             g2.fillArc(yellowPocketedArea.x + yellowBallX, yellowPocketedArea.y + 10, 20, 20, 0, 360);
             yellowBallX += 25;
         }
-        //Unpocketed
+        //Unpocketed Yellows
         g2.setComposite(alphaCompositeTransparent);
         for (int i = poolGame.getNumYellowBallsPocketed(); i < 7; i++) {
             g2.fillArc(yellowPocketedArea.x + yellowBallX, yellowPocketedArea.y + 10, 20, 20, 0, 360);
@@ -319,19 +325,16 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
         //Restore opacity 
         g2.setComposite(alphaCompositeFilled);
+    } 
 
-
-        //Text Output 
+    private void paintTextOutput(Graphics2D g2) {
         g2.setColor(textColour);
-
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
-
+        
         String message = poolGame.getOutputMessage();
 
         //Adjust font size until message fits message area 
         boolean messageFits = false; 
-
         Font outputFont; 
         int fontSize = 24; 
         int stringWidth = 0; 
@@ -365,26 +368,16 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             }
         }
 
+        //Calculate position
         int messageXPos = messageArea.x + (messageArea.width / 2) - (stringWidth / 2);
         int messageYPos = messageArea.y + ((messageArea.height  - ascent + descent) / 2) + (stringHeight / 2); 
         
         g2.drawString(message, messageXPos, messageYPos);
-
-  
-
-        g2.dispose();
     }
 
 
-    //-----------This will all need adjusting based on the state of the pool game-----------------
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-//        poolGame.userClick(e);
-    }
-
-
-//---------------Will need to update user interactions to just use left clicks----------------------
+   
+    //----------INPUT HANDLING--------------
 
     @Override
     public void mousePressed(MouseEvent e) {
@@ -403,7 +396,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                         }
                     }
 
-                    //TEMP 
+                    // ---------- For moving balls with mouse (disabled) --------
                     // for (Ball b : poolGame.balls) {
                     //    if (poolGame.ballClicked(b, xGameClick, yGameClick)) {
                     //        b.selected = true; 
@@ -417,7 +410,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                     //for (Edge ed : poolGame.edges) {
                     //    ed.checkClicked(xGameClick, yGameClick);
                     //}
-                //RIGHT CLICK - Dynamic Collisions
                 } 
             }
 
@@ -454,7 +446,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                     poolGame.updateShotPrediction();
                 }
 
-                //TEMP 
+                // --------- For moving edges (disabled) ---------- 
                 // for (Ball b : poolGame.balls) {
                 //    if(b.selected) {b.position = new Vector2D(xGameClick, yGameClick);}
                 // }
@@ -488,7 +480,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                     poolGame.getAimingCue().selected = false;
 
 
-                    //TEMP 
+                    // --------- For moving edges (disabled) ---------- 
                     // for (Ball b : poolGame.balls) {
                     //    b.selected = false; 
                     // }
@@ -548,11 +540,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
     @Override
     public void mouseMoved(MouseEvent e) {}
 
-    //Getters and Setters
-
-    public Compartment getPlayArea() {
-        return playArea;
-    }
+     @Override
+    public void mouseClicked(MouseEvent e) {}
 }
 
 
