@@ -19,6 +19,10 @@ public class Ball {
         return !((velocity.x * velocity.x + velocity.y * velocity.y) > 5);
     }
 
+    public boolean clicked(double mouseX, double mouseY) {
+        return Math.sqrt(Math.pow(position.x - mouseX, 2) + Math.pow(position.y - mouseY, 2)) <= radius;
+    }
+
     public enum BallColours {
         Red,
         Yellow,

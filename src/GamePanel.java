@@ -155,7 +155,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         g2.setComposite(alphaCompositeFilled);
 
         //---------Paint Edges-----------
-        for (Edge edge : poolGame.edges) {
+        for (Edge edge : poolGame.getEdges()) {
             g2.setColor(cushionColour);
             int paintPosStartX = (int) edge.getStart().x - edge.radius;
             int paintPosStartY = (int) edge.getStart().y - edge.radius;
@@ -199,9 +199,9 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
         //---------Paint Pockets
         
-        for (Pocket.Position position: poolGame.pockets.keySet()) {
+        for (Pocket.Position position: poolGame.getPockets().keySet()) {
             g2.setColor(pocketColour);
-            Pocket pocket = poolGame.pockets.get(position);
+            Pocket pocket = poolGame.getPockets().get(position);
             int paintPointX = (int) pocket.getPositionVec().x - pocket.radius;
             int paintPointY = (int) pocket.getPositionVec().y - pocket.radius;
             int diameter = pocket.radius * 2;
@@ -209,7 +209,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         }
 
          //---------Paint Balls-----------
-        for (Ball ball : poolGame.balls) {
+        for (Ball ball : poolGame.getBalls()) {
             int paintXPos = (int) (ball.position.x - ball.radius);
             int paintYPos = (int) (ball.position.y - ball.radius);
             int diameter = (int) ball.radius*2;
@@ -238,7 +238,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         //Draw Aiming Cue
         g2.setColor(cueColour);
         if(poolGame.gameState == GameState.TAKING_SHOT) {
-            Polygon cueVertices = poolGame.aimingCue.getCueVertices();
+            Polygon cueVertices = poolGame.getAimingCue().getCueVertices();
             for (int i = 0; i < cueVertices.npoints; i++) {
                 //Update coordinates 
                 cueVertices.xpoints[i] += playArea.x;
@@ -260,13 +260,13 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         if (poolGame.gameState == GameState.TAKING_SHOT) {
             //Draw Shot Prediction 
             g2.setColor(Color.white);
-            ShotPredictor sp = poolGame.shotPredictor;
+            ShotPredictor sp = poolGame.getShotPredictor();
             //Line from white ball source to destination 
             g2.drawLine(playArea.x + (int) sp.wbSource.x, playArea.y + (int) sp.wbSource.y, playArea.x + (int) sp.wbDestination.x, playArea.y + (int) sp.wbDestination.y);
             //Draw white ball potential destination 
-            int wbDestinationPaintXPos = (int) (sp.wbDestination.x - poolGame.whiteBall.radius); 
-            int wbDestinationPaintYPos = (int) (sp.wbDestination.y - poolGame.whiteBall.radius); 
-            int diameter = (int) poolGame.whiteBall.radius * 2;
+            int wbDestinationPaintXPos = (int) (sp.wbDestination.x - poolGame.getWhiteBall().radius); 
+            int wbDestinationPaintYPos = (int) (sp.wbDestination.y - poolGame.getWhiteBall().radius); 
+            int diameter = (int) poolGame.getWhiteBall().radius * 2;
             g2.drawArc(playArea.x + wbDestinationPaintXPos, playArea.y + wbDestinationPaintYPos, diameter, diameter, 0, 360);
 
             if(sp.hittingBall) {
@@ -398,50 +398,47 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (playArea.containsMouse(e.getX(), e.getY()) && poolGame.gameState == GameState.TAKING_SHOT){
-            //Shift coordinates to fit pool game's (0,0) coordinate system
-            int xGameClick = e.getX() - playArea.x;
-            int yGameClick = e.getY() - playArea.y;
+        if (!poolGame.gameOver) {
+            if (playArea.containsMouse(e.getX(), e.getY()) && poolGame.gameState == GameState.TAKING_SHOT){
+                //Shift coordinates to fit pool game's (0,0) coordinate system
+                int xGameClick = e.getX() - playArea.x;
+                int yGameClick = e.getY() - playArea.y;
 
-            //LEFT CLICK - Static Collisions or (TEMPORARILY!) moving edges
-            if(e.getButton() == MouseEvent.BUTTON1) {
-                
-                if(poolGame.ballClicked(poolGame.whiteBall, xGameClick, yGameClick)) {
-                    if(poolGame.mayDragWhiteBall){
-                        poolGame.whiteBall.selected = true;
+                //LEFT CLICK - Static Collisions or (TEMPORARILY!) moving edges
+                if(e.getButton() == MouseEvent.BUTTON1) {
+                    
+                    if(poolGame.getWhiteBall().clicked(xGameClick, yGameClick)) {
+                        if(poolGame.mayDragWhiteBall){
+                            poolGame.getWhiteBall().selected = true;
+                        }
                     }
-                }
 
-                //TEMP 
-                // for (Ball b : poolGame.balls) {
-                //    if (poolGame.ballClicked(b, xGameClick, yGameClick)) {
-                //        b.selected = true; 
-                //    }
-                // }
+                    //TEMP 
+                    // for (Ball b : poolGame.balls) {
+                    //    if (poolGame.ballClicked(b, xGameClick, yGameClick)) {
+                    //        b.selected = true; 
+                    //    }
+                    // }
 
-                //Check if power cue is selected
-                poolGame.aimingCue.checkClicked(xGameClick, yGameClick);
+                    //Check if power cue is selected
+                    poolGame.getAimingCue().checkClicked(xGameClick, yGameClick);
 
-                // --------- For moving edges (disabled) ---------- 
-                //for (Edge ed : poolGame.edges) {
-                //    ed.checkClicked(xGameClick, yGameClick);
-                //}
-            //RIGHT CLICK - Dynamic Collisions
-            } else if (e.getButton() == MouseEvent.BUTTON3) {
-                //Adjust click coordinates to reflect play area's (0,0) coordinate system
-                //Give pool game mouse down coordinates for shooting functionality
-                poolGame.mouseDownX = xGameClick;
-                poolGame.mouseDownY = yGameClick;
+                    // --------- For moving edges (disabled) ---------- 
+                    //for (Edge ed : poolGame.edges) {
+                    //    ed.checkClicked(xGameClick, yGameClick);
+                    //}
+                //RIGHT CLICK - Dynamic Collisions
+                } 
             }
-        }
 
-        if(powerArea.containsMouse(e.getX(), e.getY()) && poolGame.gameState == GameState.TAKING_SHOT) {
-            int xPowerClick = e.getX() - powerArea.x;
-            int yPowerClick = e.getY() - powerArea.y;
+            if(powerArea.containsMouse(e.getX(), e.getY()) && poolGame.gameState == GameState.TAKING_SHOT) {
+                int xPowerClick = e.getX() - powerArea.x;
+                int yPowerClick = e.getY() - powerArea.y;
 
-            if (e.getButton() == MouseEvent.BUTTON1) {
-                if(powerCue.checkClicked(xPowerClick, yPowerClick)) {
-                    powerCue.mouseDown = new Vector2D(xPowerClick, yPowerClick);
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    if(powerCue.checkClicked(xPowerClick, yPowerClick)) {
+                        powerCue.mouseDown = new Vector2D(xPowerClick, yPowerClick);
+                    }
                 }
             }
         }
@@ -449,87 +446,88 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if (playArea.containsMouse(e.getX(), e.getY())) {
-            //Shift coordinates to fit pool game's (0,0) coordinate system
-            int xGameClick = e.getX() - playArea.x;
-            int yGameClick = e.getY() - playArea.y;
+        if(!poolGame.gameOver) {
+            if (playArea.containsMouse(e.getX(), e.getY())) {
+                //Shift coordinates to fit pool game's (0,0) coordinate system
+                int xGameClick = e.getX() - playArea.x;
+                int yGameClick = e.getY() - playArea.y;
 
-            if(poolGame.whiteBall.selected) {
-                poolGame.dragWhiteBall(xGameClick, yGameClick); 
-                poolGame.whiteBallBeingDragged = true; 
+                if(poolGame.getWhiteBall().selected) {
+                    poolGame.dragWhiteBall(xGameClick, yGameClick); 
+                    poolGame.whiteBallBeingDragged = true; 
+                }
+
+                //Aiming cue movement 
+                if(poolGame.getAimingCue().selected) {
+                    poolGame.getAimingCue().mousePos = new Vector2D(xGameClick, yGameClick);
+                    poolGame.getAimingCue().aimCue();
+                    poolGame.updateShotPrediction();
+                }
+
+                //TEMP 
+                // for (Ball b : poolGame.balls) {
+                //    if(b.selected) {b.position = new Vector2D(xGameClick, yGameClick);}
+                // }
             }
 
-            //Aiming cue movement 
-            if(poolGame.aimingCue.selected) {
-                poolGame.aimingCue.mousePos = new Vector2D(xGameClick, yGameClick);
-                poolGame.aimingCue.aimCue();
-                poolGame.updateShotPrediction();
+            if(powerArea.containsMouse(e.getX(), e.getY())) {
+                int xPowerClick = e.getX() - powerArea.x;
+                int yPowerClick = e.getY() - powerArea.y;
+
+                //Power cue movement 
+                if(powerCue.selected) {
+                    powerCue.mousePos = new Vector2D(xPowerClick, yPowerClick);
+                    double normalizedShotPower = powerCue.getNormalizedShotPower(); 
+                    poolGame.getAimingCue().dragDistance = (int) (poolGame.getAimingCue().maxDragDistance * normalizedShotPower);
+                    powerCue.repositionCue();
+                }
             }
-
-            //TEMP 
-            // for (Ball b : poolGame.balls) {
-            //    if(b.selected) {b.position = new Vector2D(xGameClick, yGameClick);}
-            // }
-        }
-
-        if(powerArea.containsMouse(e.getX(), e.getY())) {
-            int xPowerClick = e.getX() - powerArea.x;
-            int yPowerClick = e.getY() - powerArea.y;
-
-            //Power cue movement 
-            if(powerCue.selected) {
-                powerCue.mousePos = new Vector2D(xPowerClick, yPowerClick);
-                double normalizedShotPower = powerCue.getNormalizedShotPower(); 
-                poolGame.aimingCue.dragDistance = (int) (poolGame.aimingCue.maxDragDistance * normalizedShotPower);
-                powerCue.repositionCue();
-            }
-            
-        }
-
+        }   
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (playArea.containsMouse(e.getX(), e.getY())) {
-            int xGameClick = e.getX() - playArea.x;
-            int yGameClick = e.getY() - playArea.y;
-    
-            if(e.getButton() == MouseEvent.BUTTON1) {
-                //Deselect Ball (needs updating for white ball only)
-                poolGame.whiteBall.selected = false; 
-                poolGame.whiteBallBeingDragged = false;
-    
-                //Deselect aiming cue
-                poolGame.aimingCue.selected = false;
+        if (!poolGame.gameOver) {
+            if (playArea.containsMouse(e.getX(), e.getY())) {
+                int xGameClick = e.getX() - playArea.x;
+                int yGameClick = e.getY() - playArea.y;
+        
+                if(e.getButton() == MouseEvent.BUTTON1) {
+                    //Deselect Ball (needs updating for white ball only)
+                    poolGame.getWhiteBall().selected = false; 
+                    poolGame.whiteBallBeingDragged = false;
+        
+                    //Deselect aiming cue
+                    poolGame.getAimingCue().selected = false;
 
 
-                //TEMP 
-                // for (Ball b : poolGame.balls) {
-                //    b.selected = false; 
-                // }
-            }
-        }
-
-        if (powerArea.containsMouse(e.getX(), e.getY())) {
-            int xPowerClick = e.getX() - powerArea.x;
-            int yPowerClick = e.getY() - powerArea.y;
-
-            if (e.getButton() == MouseEvent.BUTTON1) {
-                if (powerCue.selected) {
-                    powerCue.mouseUp = new Vector2D(xPowerClick, yPowerClick);
-                    double normalizedShotPower = powerCue.getNormalizedShotPower();
-                    //Only take shot if minimum shot power reached 
-                    if (normalizedShotPower > minShotPower) {
-                        poolGame.takeShot(normalizedShotPower);
-                    }
-                    powerCue.resetPowerCue();
+                    //TEMP 
+                    // for (Ball b : poolGame.balls) {
+                    //    b.selected = false; 
+                    // }
                 }
             }
 
-            //Reset aiming cue's distance from white ball for the next shot
-            poolGame.aimingCue.dragDistance = 0;
-        }
+            if (powerArea.containsMouse(e.getX(), e.getY())) {
+                int xPowerClick = e.getX() - powerArea.x;
+                int yPowerClick = e.getY() - powerArea.y;
 
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    if (powerCue.selected) {
+                        powerCue.mouseUp = new Vector2D(xPowerClick, yPowerClick);
+                        double normalizedShotPower = powerCue.getNormalizedShotPower();
+                        //Only take shot if minimum shot power reached 
+                        if (normalizedShotPower > minShotPower) {
+                            poolGame.takeShot(normalizedShotPower);
+                        }
+                        powerCue.resetPowerCue();
+                    }
+                }
+
+                //Reset aiming cue's distance from white ball for the next shot
+                poolGame.getAimingCue().dragDistance = 0;
+            }
+        }
     }
 
 

@@ -9,52 +9,30 @@ public class Pool {
     private int gameWidth;
     private int gameHeight;
 
-    //Ball data structures
-    public ArrayList<Ball> balls;
-    public Ball[] redBalls = new Ball[7];
-    public Ball[] yellowBalls = new Ball[7];
-    //At least need white ball field for cue to update its position
-    public Ball whiteBall;
-    public Ball blackBall;
-    private int ballRadius; 
+    //Balls information
+    private ArrayList<Ball> balls;
+    private Ball whiteBall;
+    private final int ballRadius = 12; 
 
     //Data structure for handling collisions
-    public ArrayList<Ball[]> collidingPairs;
+    private ArrayList<Ball[]> collidingPairs;
 
-    //Aming cue data structure
-    public AimingCue aimingCue;
+    //Aiming cue data structure
+    private AimingCue aimingCue;
 
     //Line segment data structures
-    public ArrayList<Edge> edges;
+    private ArrayList<Edge> edges;
 
     //Pockets data structure
-    public HashMap<Pocket.Position, Pocket> pockets;
+    private HashMap<Pocket.Position, Pocket> pockets;
 
-    public static final double DRAG = 0.8;
-
+    //Game settings 
+    private static final double DRAG = 0.8;
     public boolean ready = false;
-
-    public double mouseDownX;
-    public double mouseDownY;
-
-    public double mouseUpX;
-    public double mouseUpY;
-
-    private int mouseX;
-    private int mouseY;
-
     public GameState gameState;
-
     private final int maxShotPower = 2000;
 
-    public ShotPredictor shotPredictor; 
-
-    //Pocketed balls must be removed from the game instantly, but processed at the end of the shot, hence the separate data structures 
-    private ArrayList<Ball> ballsToRemove; 
-    private ArrayList<Ball> pocketedBallsToProcess; 
-
-    public CushionsInfo cushionsInfo; 
-
+    //Game state
     public int numYellowBallsPocketed = 0; 
     public int numRedBallsPocketed = 0; 
     public boolean broken; 
@@ -67,6 +45,17 @@ public class Pool {
     public boolean blackPocketedByP1;
     public boolean blackPocketedByP2;
     public boolean gameOver;
+
+
+    private ShotPredictor shotPredictor; 
+
+    //Pocketed balls must be removed from the game instantly, but processed at the end of the shot, hence the separate data structures 
+    private ArrayList<Ball> ballsToRemove; 
+    private ArrayList<Ball> pocketedBallsToProcess; 
+
+    public CushionsInfo cushionsInfo; 
+
+
 
 
     private Ball firstBallHitBall; 
@@ -127,8 +116,6 @@ public class Pool {
         //Create balls
         balls = new ArrayList<>();
         
-        ballRadius = 12;
-
         //White ball
         whiteBall = new Ball(ballRadius, new Vector2D(3 * gameWidth / 4, gameHeight / 2), Ball.BallColours.White);
         balls.add(whiteBall);
@@ -1005,12 +992,6 @@ public class Pool {
         updateShotPrediction();
     }
 
-    //Should this be public?
-    public boolean ballClicked(Ball ball, double mouseX, double mouseY) {
-        return Math.sqrt(Math.pow(ball.position.x - mouseX, 2) + Math.pow(ball.position.y - mouseY, 2)) <= ball.radius;
-    }
-
-
     //Probably needs changing
     public void takeShot(double normalizedShotPower) {
         whiteBall.velocity.x = normalizedShotPower * maxShotPower * aimingCue.getCueDirection().x;
@@ -1141,21 +1122,27 @@ public class Pool {
 
     //Getters and Setters
 
-
-    public int getMouseX() {
-        return mouseX;
+    public ArrayList<Ball> getBalls() {
+        return balls; 
     }
 
-    public void setMouseX(int mouseX) {
-        this.mouseX = mouseX;
+    public Ball getWhiteBall() {
+        return whiteBall; 
     }
 
-    public int getMouseY() {
-        return mouseY;
+    public AimingCue getAimingCue() {
+        return aimingCue;
     }
 
-    public void setMouseY(int mouseY) {
-        this.mouseY = mouseY;
+    public ArrayList<Edge> getEdges() {
+        return edges; 
     }
 
+    public HashMap<Pocket.Position, Pocket> getPockets() {
+        return pockets;
+    }
+
+    public ShotPredictor getShotPredictor() {
+        return shotPredictor; 
+    }
 }
