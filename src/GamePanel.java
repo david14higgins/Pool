@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.AreaAveragingScaleFilter;
+import java.awt.image.BufferStrategy;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;

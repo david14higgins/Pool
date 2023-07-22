@@ -2,6 +2,8 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import Ball.BallColours;
+
 import java.awt.Polygon;
 
 
@@ -495,7 +497,6 @@ public class Pool {
         //if(!handled) {handled = multipleRedBallsPocketed();}
         
     
-        
         pocketedBallsToProcess.clear();
         gameState = GameState.PREPARE_TO_TAKE_SHOT; 
     }
@@ -950,6 +951,20 @@ public class Pool {
                 }
                 mayDragWhiteBall = true; 
                 return true;
+            } else { //If undecided, let player continue with first potted ball 
+                Ball firstPocketed = pocketedBallsToProcess.get(0); 
+                if(firstPocketed.colour == Ball.BallColours.Red) {
+                    if(playerOneTurn) {
+                        playerOneRed = true; 
+                        outputMessage = "Player one you are reds. You may continue your turn";
+                    } else {
+                        playerOneRed = false; 
+                        outputMessage = "Player two you are reds. You may continue your turn";
+                    }
+                } else { //Can now only be yellow otherwise a different scenario would have been triggered
+                    
+
+                }
             }
         }
 
