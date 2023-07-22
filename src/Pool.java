@@ -1,4 +1,3 @@
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.awt.Polygon;
@@ -28,39 +27,37 @@ public class Pool {
 
     //Game settings 
     private static final double DRAG = 0.8;
-    public boolean ready = false;
-    public GameState gameState;
     private final int maxShotPower = 2000;
 
-    //Game state
-    public int numYellowBallsPocketed = 0; 
-    public int numRedBallsPocketed = 0; 
-    public boolean broken; 
-    public boolean decided; 
-    public boolean playerOneRed; 
-    public boolean playerOneTurn; 
-    public boolean mayDragWhiteBall; 
-    public boolean whiteBallBeingDragged;
-    public boolean firstBallHitBool; 
-    public boolean blackPocketedByP1;
-    public boolean blackPocketedByP2;
-    public boolean gameOver;
-
-
+    //Shot predictor object
     private ShotPredictor shotPredictor; 
 
-    //Pocketed balls must be removed from the game instantly, but processed at the end of the shot, hence the separate data structures 
+    //Object contains information on cushion position
+    private CushionsInfo cushionsInfo; 
+
+    //Game state
+    private GameState gameState;
+    private boolean ready;
+    private int numYellowBallsPocketed; 
+    private int numRedBallsPocketed; 
+    private boolean broken; 
+    private boolean decided; 
+    private boolean playerOneRed; 
+    private boolean playerOneTurn; 
+    private boolean mayDragWhiteBall; 
+    private boolean whiteBallBeingDragged;
+    private boolean firstBallHitBool; 
+    private boolean blackPocketedByP1;
+    private boolean blackPocketedByP2;
+    private boolean gameOver;
+    private Ball firstBallHitBall; 
+    private String outputMessage; 
+
+
+    //Data structures to aid with the processing and removal of pocketed balls  
     private ArrayList<Ball> ballsToRemove; 
     private ArrayList<Ball> pocketedBallsToProcess; 
 
-    public CushionsInfo cushionsInfo; 
-
-
-
-
-    private Ball firstBallHitBall; 
-
-    public String outputMessage; 
 
     public Pool(int width, int height) {
         this.gameWidth = width;
@@ -100,16 +97,15 @@ public class Pool {
         //Neither player has pocketed black ball yet 
         blackPocketedByP1 = false; 
         blackPocketedByP2 = false; 
+        //No balls pocketed yet 
+        numRedBallsPocketed = 0; 
+        numYellowBallsPocketed = 0; 
         //Game not over 
         gameOver = false; 
         //Starting output message 
         outputMessage = "Player One to break. You may move the white ball";
-
-
-        //TEMP 
-        //playerOneRed = true;
-        //playerOneTurn = true;
-        //decided = true; 
+        //Ready to play 
+        ready = true; 
     }
 
     private void createBalls() {
@@ -218,7 +214,7 @@ public class Pool {
 
     public void update() {
     
-        if (gameState == gameState.BALLS_MOVING) {
+        if (gameState == GameState.BALLS_MOVING) {
             for (int n = 0; n < GamePanel.nSimulationUpdates; n++) {
                 //Move the balls
                 moveBalls();
@@ -239,19 +235,18 @@ public class Pool {
                 //Check balls have stopped moving
                 checkBallsStationary();
             }
-        } else if(gameState == gameState.PREPARE_TO_TAKE_SHOT) {
+        } else if(gameState == GameState.PREPARE_TO_TAKE_SHOT) {
             aimingCue.repositionCue();
             updateShotPrediction();
             firstBallHitBall = null; 
             firstBallHitBool = false; 
-            gameState = gameState.TAKING_SHOT;
-        } else if(gameState == gameState.TAKING_SHOT) {
+            gameState = GameState.TAKING_SHOT;
+        } else if(gameState == GameState.TAKING_SHOT) {
             aimingCue.repositionCue();
-        } else if (gameState == gameState.PROCESSING_SHOT) {
+        } else if (gameState == GameState.PROCESSING_SHOT) {
             processShot();
         }
     }
-
 
     public void moveBalls() {
         for (Ball b : balls) {
@@ -1120,8 +1115,7 @@ public class Pool {
     }
 
 
-    //Getters and Setters
-
+    //Getters 
     public ArrayList<Ball> getBalls() {
         return balls; 
     }
@@ -1144,5 +1138,61 @@ public class Pool {
 
     public ShotPredictor getShotPredictor() {
         return shotPredictor; 
+    }
+
+    public CushionsInfo getCushionsInfo() {
+        return cushionsInfo; 
+    }
+
+    public GameState getGameState() {
+        return gameState; 
+    }
+
+    public boolean isReady() {
+        return ready; 
+    }
+
+    public int getNumRedBallsPocketed() {
+        return numRedBallsPocketed; 
+    }
+
+    public int getNumYellowBallsPocketed() {
+        return numYellowBallsPocketed; 
+    }
+
+    public boolean getPlayerOneRed() {
+        return playerOneRed; 
+    }
+
+    public boolean isBroken() {
+        return broken; 
+    }
+
+    public boolean isWhiteBallDraggable() {
+        return mayDragWhiteBall; 
+    }
+
+    public boolean isWhiteBallBeingDragged() {
+        return whiteBallBeingDragged;
+    }
+
+    public void setWhiteBallBeingDragged(boolean value) {
+        whiteBallBeingDragged = value; 
+    }
+
+    public boolean hasPlayerOnePocketedBlack() {
+        return blackPocketedByP1;
+    }
+
+    public boolean hasPlayerTwoPocketedBlack() {
+        return blackPocketedByP2;
+    }
+
+    public String getOutputMessage() {
+        return outputMessage; 
+    }
+
+    public boolean isGameOver() {
+        return gameOver; 
     }
 }

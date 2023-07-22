@@ -3,19 +3,17 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.image.AreaAveragingScaleFilter;
-import java.awt.image.BufferStrategy;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.awt.geom.RoundRectangle2D;
 
 
 public class GamePanel extends JPanel implements Runnable, MouseListener, MouseMotionListener {
-    //Dimensions
-    public static final int WIDTH = 1155;
-    public static final int HEIGHT = 615;
+    //Panel Dimensions
+    private static final int WIDTH = 1155;
+    private static final int HEIGHT = 615;
 
+    //Compartment Objects
     private ArrayList<Compartment> compartments;
     private Compartment playArea;
     private Compartment powerArea; 
@@ -23,18 +21,19 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
     private Compartment redPocketedArea; 
     private Compartment messageArea;
 
-    public static final int FPS = 60;
-    public static final double ElapsedTime = 0.017; //60FPS = 16.7 milliseconds between each frame
+    private static final int FPS = 60;
+    private static final double ElapsedTime = 0.017; //60FPS = 16.7 milliseconds between each frame
     //How many times we wish to subdivide the epoch
     public static final int nSimulationUpdates = 4;
     public static double fSimElapsedTime = ElapsedTime / nSimulationUpdates;
 
-    Thread gameThread;
+    private Thread gameThread;
 
-    Pool poolGame;
+    private Pool poolGame;
 
-    PowerCue powerCue;
+    private PowerCue powerCue;
 
+    //(How far should the power cue be dragged)
     private final double minShotPower = 0.05;
 
     public GamePanel() {
@@ -64,7 +63,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         int drawCount = 0;
 
 
-        while(gameThread != null && poolGame.ready) {
+        while(gameThread != null && poolGame.isReady()) {
             currentTime = System.nanoTime();
 
             delta += (currentTime - lastTime) / drawInterval;
@@ -115,18 +114,9 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
         //---------Paint Program Compartments-----------
 
-        // Enable antialiasing for smooth edges
-        //g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
         //Play area border
         g2.setColor(panelColour);
         for (Compartment c : compartments) {
-            // g2.fillRect(c.x - 5, c.y - 5, c.width + 10, 5);
-            // g2.fillRect(c.x - 5, c.y, 5, c.height);
-            // g2.fillRect(c.x + c.width, c.y, 5, c.height);
-            // g2.fillRect(c.x - 5, c.y + c.height, c.width + 10, 5);
-
-
             int cornerRadius = 30; // Adjust the corner radius as needed
 
             // Create a rounded rectangle shape
@@ -147,9 +137,9 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         g2.setComposite(alphaCompositeTransparent);
         g2.drawLine(playArea.x + playArea.width * 3 / 4, playArea.y, playArea.x + playArea.width * 3 / 4, playArea.y + playArea.height);
         g2.setColor(highlightColur);
-        if(!poolGame.broken && poolGame.whiteBallBeingDragged) {
+        if(!poolGame.isBroken() && poolGame.isWhiteBallBeingDragged()) {
             g2.fillRect(playArea.x + playArea.width * 3 / 4, playArea.y, playArea.width / 4, playArea.height);
-        } else if (poolGame.broken && poolGame.whiteBallBeingDragged) {
+        } else if (poolGame.isBroken() && poolGame.isWhiteBallBeingDragged()) {
             g2.fillRect(playArea.x, playArea.y, playArea.width, playArea.height);
         }
         g2.setComposite(alphaCompositeFilled);
@@ -176,7 +166,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
             Polygon edgeFill = new Polygon(new int[] {p1.x, p2.x, p3.x, p4.x, p1.x}, new int[] {p1.y, p2.y, p3.y, p4.y, p1.y}, 5);
             g2.fillPolygon(edgeFill);
 
-            for (Polygon cushionArea : poolGame.cushionsInfo.getCushionPolygons()) {
+            for (Polygon cushionArea : poolGame.getCushionsInfo().getCushionPolygons()) {
                 //Create deep copy of polygon
                 Polygon newPoly = new Polygon(cushionArea.xpoints, cushionArea.ypoints, cushionArea.npoints);
                 for (int i = 0; i < cushionArea.npoints; i++) {
@@ -237,7 +227,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
         //Draw Aiming Cue
         g2.setColor(cueColour);
-        if(poolGame.gameState == GameState.TAKING_SHOT) {
+        if(poolGame.getGameState() == GameState.TAKING_SHOT) {
             Polygon cueVertices = poolGame.getAimingCue().getCueVertices();
             for (int i = 0; i < cueVertices.npoints; i++) {
                 //Update coordinates 
@@ -257,7 +247,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         g2.fillPolygon(cueVertices);
 
 
-        if (poolGame.gameState == GameState.TAKING_SHOT) {
+        if (poolGame.getGameState() == GameState.TAKING_SHOT) {
             //Draw Shot Prediction 
             g2.setColor(Color.white);
             ShotPredictor sp = poolGame.getShotPredictor();
@@ -283,19 +273,19 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         g2.setColor(redBallsColour);
         g2.setComposite(alphaCompositeFilled);
         int redBallX = 10;
-        for (int i = 0; i < poolGame.numRedBallsPocketed; i++) {
+        for (int i = 0; i < poolGame.getNumRedBallsPocketed(); i++) {
             g2.fillArc(redPocketedArea.x + redBallX, redPocketedArea.y + 10, 20, 20, 0, 360);
             redBallX += 25;
         }
         //Unpocketed
         g2.setComposite(alphaCompositeTransparent);
-        for (int i = poolGame.numRedBallsPocketed; i < 7; i++) {
+        for (int i = poolGame.getNumRedBallsPocketed(); i < 7; i++) {
             g2.fillArc(redPocketedArea.x + redBallX, redPocketedArea.y + 10, 20, 20, 0, 360);
             redBallX += 25;
         }
         //Black ball
         g2.setColor(blackBallColour);
-        if(poolGame.playerOneRed && poolGame.blackPocketedByP1) {
+        if(poolGame.getPlayerOneRed() && poolGame.hasPlayerOnePocketedBlack()) {
             g2.setComposite(alphaCompositeFilled);
         } else {
             g2.setComposite(alphaCompositeTransparent);
@@ -308,19 +298,19 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         g2.setColor(yellowBallsColour);
         g2.setComposite(alphaCompositeFilled);
         int yellowBallX = 10;
-        for (int i = 0; i < poolGame.numYellowBallsPocketed; i++) {
+        for (int i = 0; i < poolGame.getNumYellowBallsPocketed(); i++) {
             g2.fillArc(yellowPocketedArea.x + yellowBallX, yellowPocketedArea.y + 10, 20, 20, 0, 360);
             yellowBallX += 25;
         }
         //Unpocketed
         g2.setComposite(alphaCompositeTransparent);
-        for (int i = poolGame.numYellowBallsPocketed; i < 7; i++) {
+        for (int i = poolGame.getNumYellowBallsPocketed(); i < 7; i++) {
             g2.fillArc(yellowPocketedArea.x + yellowBallX, yellowPocketedArea.y + 10, 20, 20, 0, 360);
             yellowBallX += 25;
         }
         //Black ball
         g2.setColor(blackBallColour);
-        if(!poolGame.playerOneRed && poolGame.blackPocketedByP2) {
+        if(!poolGame.getPlayerOneRed() && poolGame.hasPlayerTwoPocketedBlack()) {
             g2.setComposite(alphaCompositeFilled);
         } else {
             g2.setComposite(alphaCompositeTransparent);
@@ -337,7 +327,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
 
-        String message = poolGame.outputMessage;
+        String message = poolGame.getOutputMessage();
 
         //Adjust font size until message fits message area 
         boolean messageFits = false; 
@@ -398,8 +388,8 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (!poolGame.gameOver) {
-            if (playArea.containsMouse(e.getX(), e.getY()) && poolGame.gameState == GameState.TAKING_SHOT){
+        if (!poolGame.isGameOver()) {
+            if (playArea.containsMouse(e.getX(), e.getY()) && poolGame.getGameState() == GameState.TAKING_SHOT){
                 //Shift coordinates to fit pool game's (0,0) coordinate system
                 int xGameClick = e.getX() - playArea.x;
                 int yGameClick = e.getY() - playArea.y;
@@ -408,7 +398,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 if(e.getButton() == MouseEvent.BUTTON1) {
                     
                     if(poolGame.getWhiteBall().clicked(xGameClick, yGameClick)) {
-                        if(poolGame.mayDragWhiteBall){
+                        if(poolGame.isWhiteBallDraggable()){
                             poolGame.getWhiteBall().selected = true;
                         }
                     }
@@ -431,7 +421,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 } 
             }
 
-            if(powerArea.containsMouse(e.getX(), e.getY()) && poolGame.gameState == GameState.TAKING_SHOT) {
+            if(powerArea.containsMouse(e.getX(), e.getY()) && poolGame.getGameState() == GameState.TAKING_SHOT) {
                 int xPowerClick = e.getX() - powerArea.x;
                 int yPowerClick = e.getY() - powerArea.y;
 
@@ -446,7 +436,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if(!poolGame.gameOver) {
+        if(!poolGame.isGameOver()) {
             if (playArea.containsMouse(e.getX(), e.getY())) {
                 //Shift coordinates to fit pool game's (0,0) coordinate system
                 int xGameClick = e.getX() - playArea.x;
@@ -454,7 +444,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
                 if(poolGame.getWhiteBall().selected) {
                     poolGame.dragWhiteBall(xGameClick, yGameClick); 
-                    poolGame.whiteBallBeingDragged = true; 
+                    poolGame.setWhiteBallBeingDragged(true);
                 }
 
                 //Aiming cue movement 
@@ -487,15 +477,12 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if (!poolGame.gameOver) {
+        if (!poolGame.isGameOver()) {
             if (playArea.containsMouse(e.getX(), e.getY())) {
-                int xGameClick = e.getX() - playArea.x;
-                int yGameClick = e.getY() - playArea.y;
-        
                 if(e.getButton() == MouseEvent.BUTTON1) {
                     //Deselect Ball (needs updating for white ball only)
                     poolGame.getWhiteBall().selected = false; 
-                    poolGame.whiteBallBeingDragged = false;
+                    poolGame.setWhiteBallBeingDragged(false);
         
                     //Deselect aiming cue
                     poolGame.getAimingCue().selected = false;

@@ -1,5 +1,3 @@
-import javax.swing.*;
-
 public class Edge {
     private Vector2D start;
     private Vector2D startNormalOne;
