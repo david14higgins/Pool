@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.awt.Polygon;
 
-
 public class Pool {
     //Game information
     private int gameWidth;
@@ -62,7 +61,6 @@ public class Pool {
     public Pool(int width, int height) {
         this.gameWidth = width;
         this.gameHeight = height;
-        this.gameState = GameState.TAKING_SHOT;
 
         createBalls();
         createAimingCue();
@@ -79,6 +77,7 @@ public class Pool {
         
         //Don't start game loop until game is prepared
         ready = true;
+        this.gameState = GameState.TAKING_SHOT;
     }
 
     private void initalizeGameSettings() {
@@ -197,6 +196,7 @@ public class Pool {
         Pocket ul = pockets.get(Pocket.Position.UpperLeft);
         Pocket um = pockets.get(Pocket.Position.UpperMiddle);
  
+        //CushionsInfo object used for calculations 
         cushionsInfo = new CushionsInfo(ul.radius, um.radius, edgeRadius, gameWidth, gameHeight);
 
         Vector2D cushionEndCoords[] = cushionsInfo.getCushionCoords();
@@ -211,9 +211,8 @@ public class Pool {
 
     }
 
-
+    //Update the game based on its current state
     public void update() {
-    
         if (gameState == GameState.BALLS_MOVING) {
             for (int n = 0; n < GamePanel.nSimulationUpdates; n++) {
                 //Move the balls
@@ -374,6 +373,7 @@ public class Pool {
         }
     }
 
+    //------ Used in early days of the app - static collisions will not be possible in the game ------
     private void handleStaticCollisions() {
         for (Ball[] collidingPair : collidingPairs) {
             Ball ball1 = collidingPair[0];
@@ -454,6 +454,8 @@ public class Pool {
         }
     }
 
+    //Checks a series of scenarios that could have taken place after a shot 
+    //Each scenario has its own method which will update game settings if it has occured 
     private void processShot() { 
         boolean handled = false; 
         handled = blackPocketedOnBreak();        
@@ -956,9 +958,6 @@ public class Pool {
         return false; 
     }
 
-    
-
-
     //Place white ball back in its original place (or near)
     private void replaceWhiteBall() {
         whiteBall.radius = ballRadius; 
@@ -1112,6 +1111,25 @@ public class Pool {
             aimingCue.repositionCue();
             updateShotPrediction();
         }
+    }
+
+    public void restartGame() {
+        balls = null; 
+        aimingCue = null; 
+        shotPredictor = null; 
+
+        createBalls();
+        createAimingCue();
+        createShotPredictor();
+        
+        //Instantiate arraylists 
+        collidingPairs = new ArrayList<>();
+        ballsToRemove = new ArrayList<>();
+        pocketedBallsToProcess = new ArrayList<>(); 
+        
+        initalizeGameSettings();
+
+        gameState = GameState.TAKING_SHOT;
     }
 
 

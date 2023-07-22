@@ -514,19 +514,11 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 //Reset aiming cue's distance from white ball for the next shot
                 poolGame.getAimingCue().dragDistance = 0;
             }
+        } else {
+            poolGame.restartGame();
         }
     }
 
-
-
-    @Override
-    public void mouseEntered(MouseEvent e) {}
-
-    @Override
-    public void mouseExited(MouseEvent e) {}
-
-    @Override
-    public void mouseMoved(MouseEvent e) {}
 
     private void createCompartments() {
         compartments = new ArrayList<>();
@@ -545,6 +537,16 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
         messageArea = new Compartment(240, 565, 675, 40);
         compartments.add(messageArea);
     }
+
+    //Empty methods (do not need implementing)
+    @Override
+    public void mouseEntered(MouseEvent e) {}
+
+    @Override
+    public void mouseExited(MouseEvent e) {}
+
+    @Override
+    public void mouseMoved(MouseEvent e) {}
 
     //Getters and Setters
 
