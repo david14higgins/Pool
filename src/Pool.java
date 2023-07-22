@@ -159,7 +159,7 @@ public class Pool {
     private void createAimingCue() {
         //Create Cue and initialize 
         aimingCue = new AimingCue(300, 4);
-        aimingCue.whiteBallPos = whiteBall.position;
+        aimingCue.setWhiteBallPos(whiteBall.position);
         aimingCue.initializeCue();
     }
 
@@ -981,7 +981,7 @@ public class Pool {
         balls.add(whiteBall); 
         //reset aimingCue and shot predictor 
         aimingCue.initializeCue();
-        aimingCue.whiteBallPos = whiteBall.position; 
+        aimingCue.setWhiteBallPos(whiteBall.position);
         aimingCue.repositionCue();
         updateShotPrediction();
     }
@@ -1107,7 +1107,7 @@ public class Pool {
             }
 
             //Update aiming cue and shot predictor after white ball drag 
-            aimingCue.whiteBallPos = whiteBall.position;
+            aimingCue.setWhiteBallPos(whiteBall.position);
             aimingCue.repositionCue();
             updateShotPrediction();
         }

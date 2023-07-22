@@ -101,7 +101,6 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
     private Color whiteBallColour = Color.WHITE; 
     private Color blackBallColour = Color.BLACK; 
     private Color panelColour = new Color(0, 50, 0); 
-    private Color playAreaBackgroundColor = Color.BLACK; 
     private Color lineColour = Color.lightGray; 
     private Color highlightColur = Color.GREEN;
     private Color cushionColour = new Color(0, 70, 0);
@@ -240,6 +239,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
     }
 
     private void paintPowerCue(Graphics2D g2) {
+        g2.setColor(cueColour);
         Polygon cueVertices = powerCue.getCueVertices();
         for (int i = 0; i < cueVertices.npoints; i++) {
             //Update coordinates 
@@ -460,7 +460,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 if(powerCue.selected) {
                     powerCue.mousePos = new Vector2D(xPowerClick, yPowerClick);
                     double normalizedShotPower = powerCue.getNormalizedShotPower(); 
-                    poolGame.getAimingCue().dragDistance = (int) (poolGame.getAimingCue().maxDragDistance * normalizedShotPower);
+                    poolGame.getAimingCue().setDragDistance((int) (poolGame.getAimingCue().getMaxDragDistance() * normalizedShotPower));
                     powerCue.repositionCue();
                 }
             }
@@ -504,7 +504,7 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
                 }
 
                 //Reset aiming cue's distance from white ball for the next shot
-                poolGame.getAimingCue().dragDistance = 0;
+                poolGame.getAimingCue().setDragDistance(0); 
             }
         } else {
             poolGame.restartGame();

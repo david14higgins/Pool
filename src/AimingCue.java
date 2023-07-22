@@ -1,13 +1,13 @@
 public class AimingCue extends Cue{
     //For positioning w.r.t to the white ball 
-    public Vector2D whiteBallPos;
+    private Vector2D whiteBallPos;
     //Unit vector of aiming cue stick's current direction
     private double directionX; 
     private double directionY; 
     //How far cue is drawn from the white ball (needs updating when power cue implemented)
     private final int minDragDistance = 20;
-    public final int maxDragDistance = 300;
-    public int dragDistance = 0; 
+    private final int maxDragDistance = 300;
+    private int dragDistance = 0; 
     
 
 
@@ -52,8 +52,21 @@ public class AimingCue extends Cue{
         updateVerticesAndHitbox();
     }
 
+   
+    //Getters and Setters 
     public Vector2D getCueDirection() {
         return new Vector2D(directionX, directionY);
     }
 
+    public int getMaxDragDistance() {
+        return maxDragDistance; 
+    }
+
+    public void setWhiteBallPos(Vector2D value) {
+        whiteBallPos = value;
+    }
+
+    public void setDragDistance(int value) {
+        dragDistance = value;
+    }
 }
