@@ -139,14 +139,22 @@ public class GamePanel extends JPanel implements Runnable, MouseListener, MouseM
 
     //Paints game's white line and highlighted areas if white ball is being dragged 
     private void paintPlayArea(Graphics2D g2) {
+        //Two opacity settings (100% and 50%)
+        AlphaComposite alphaCompositeFilled = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f);
+        AlphaComposite alphaCompositeTransparent = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
+
         g2.setColor(lineColour);
         g2.drawLine(playArea.x + playArea.width * 3 / 4, playArea.y, playArea.x + playArea.width * 3 / 4, playArea.y + playArea.height);
         g2.setColor(highlightColur);
+        g2.setComposite(alphaCompositeTransparent);
         if(!poolGame.isBroken() && poolGame.isWhiteBallBeingDragged()) {
             g2.fillRect(playArea.x + playArea.width * 3 / 4, playArea.y, playArea.width / 4, playArea.height);
         } else if (poolGame.isBroken() && poolGame.isWhiteBallBeingDragged()) {
             g2.fillRect(playArea.x, playArea.y, playArea.width, playArea.height);
         }
+        //Return opacity 
+        g2.setComposite(alphaCompositeFilled);
+
     }
 
     private void paintCushions(Graphics2D g2) {
